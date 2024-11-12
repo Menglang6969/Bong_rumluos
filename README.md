@@ -1,6 +1,5 @@
 
 # Bong Rumluos
-## Processing
 ### General Customer
 * Customers can Installment Products(Phone, Moto) From Shop owner
 * Customers need to give the shop owner (Identity, phoneNumber, Salary paper,....)
