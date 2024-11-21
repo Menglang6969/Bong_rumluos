@@ -2,9 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.entities;
 
 import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +11,8 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @Builder
+@Setter
+@Getter
 @Table(name = "categories")
 public class Category extends BaseAuditEntity<Long> {
 
@@ -29,10 +29,6 @@ public class Category extends BaseAuditEntity<Long> {
     @JoinColumn(
             name = "parent_id"
     )
-    private Category parentId;
+    private Category parent;
 
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<Product> products=new HashSet<>();
 }

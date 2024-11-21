@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Setter
@@ -25,7 +26,7 @@ public abstract class BaseAuditEntity <T extends Serializable> extends BaseEntit
 //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at",nullable = false,updatable = false)
     @CreatedDate
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
 
     @Column(name = "created_by",updatable = false,nullable = false,length = 40)
@@ -35,7 +36,7 @@ public abstract class BaseAuditEntity <T extends Serializable> extends BaseEntit
     @LastModifiedDate
 //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at",insertable = false)
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @LastModifiedBy
     @Column(name = "updated_by",insertable = false)
