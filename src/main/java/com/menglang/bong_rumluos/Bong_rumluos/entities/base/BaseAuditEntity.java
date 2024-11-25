@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ public abstract class BaseAuditEntity <T extends Serializable> extends BaseEntit
 
 //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at",nullable = false,updatable = false)
+    @DateTimeFormat
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -34,7 +36,7 @@ public abstract class BaseAuditEntity <T extends Serializable> extends BaseEntit
     private String createdBy;
 
     @LastModifiedDate
-//    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat
     @Column(name = "updated_at",insertable = false)
     private LocalDateTime updatedAt;
 

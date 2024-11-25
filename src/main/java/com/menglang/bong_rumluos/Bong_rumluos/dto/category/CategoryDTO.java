@@ -12,7 +12,7 @@ import lombok.*;
 public class CategoryDTO {
     @Nonnull
     @NotBlank(message = "Name must be not null")
-    @Size(min = 5)
+    @Size(min = 5,message = "Name must be greater than 5 characters")
     private String name;
     private String description;
     private String color;

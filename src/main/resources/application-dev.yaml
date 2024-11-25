@@ -1,0 +1,6 @@
+file:
+  upload-dir: './uploads'
+  app:
+    api-url: 'https://lang.com/'
+    rest-uri: '/file'
+    table-name: 'files'
