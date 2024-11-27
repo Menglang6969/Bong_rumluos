@@ -8,18 +8,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class BaseAuditDTO {
 
-    @JsonProperty(index = 20)
-    private LocalDate createdAt;
-    @JsonProperty(index = 21)
+    private LocalDateTime createdAt;
     private String createdBy;
-    @JsonProperty(index = 22)
-    private LocalDate updatedAt;
-    @JsonProperty(index = 23)
+    private LocalDateTime updatedAt;
     private String updatedBy;
 }

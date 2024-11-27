@@ -23,7 +23,12 @@ spring:
     open-in-view: true
     properties:
       hibernate:
+        generate_statistics: true
         enable_lazy_load_no_trans: true
+        show: true
+        format_sql: true
+        use_sql_comments: true
+
     hibernate:
       ddl-auto: create-drop
 
@@ -36,3 +41,13 @@ spring:
         web-allow-others: false
 server:
   port: 9090
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          description:
+            sql:
+              BasicBinder: TRACE

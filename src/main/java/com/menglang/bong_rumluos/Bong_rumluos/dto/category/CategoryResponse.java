@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,7 +28,7 @@ public class CategoryResponse extends BaseAuditDTO {
     private CategoryResponse parent;
 
 
-    public CategoryResponse(LocalDate createdAt, String createdBy, LocalDate updatedAt, String updatedBy) {
+    public CategoryResponse(LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, String updatedBy) {
         super(createdAt, createdBy, updatedAt, updatedBy);
     }
 }
