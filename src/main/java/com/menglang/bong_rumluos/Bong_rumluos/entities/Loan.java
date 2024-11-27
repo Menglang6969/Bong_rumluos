@@ -34,7 +34,7 @@ public class Loan extends BaseAuditEntity<Long> {
     @Column(name = "end_date",nullable = false)
     private LocalDate endDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id",nullable = false)
     private Customer customer;
 

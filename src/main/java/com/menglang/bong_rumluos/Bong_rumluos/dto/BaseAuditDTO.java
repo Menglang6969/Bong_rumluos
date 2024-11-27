@@ -14,12 +14,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BaseAuditDTO {
 
-    @JsonProperty(index = 20)
     private LocalDate createdAt;
-    @JsonProperty(index = 21)
     private String createdBy;
-    @JsonProperty(index = 22)
     private LocalDate updatedAt;
-    @JsonProperty(index = 23)
     private String updatedBy;
 }

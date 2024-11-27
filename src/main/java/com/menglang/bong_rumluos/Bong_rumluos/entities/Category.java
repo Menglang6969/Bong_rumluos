@@ -25,7 +25,7 @@ public class Category extends BaseAuditEntity<Long> {
     @Column(length = 40)
     private String color;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "parent_id"
     )

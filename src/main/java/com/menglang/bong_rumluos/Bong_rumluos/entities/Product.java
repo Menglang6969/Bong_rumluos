@@ -1,8 +1,9 @@
 package com.menglang.bong_rumluos.Bong_rumluos.entities;
-
 import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -18,13 +19,13 @@ import lombok.*;
 )
 public class Product extends BaseAuditEntity<Long> {
 
-    @Column(length = 50)
+    @Column(length = 50,unique = true)
     private String name;
 
     @Column(length = 100)
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -39,9 +40,13 @@ public class Product extends BaseAuditEntity<Long> {
     @Column(length = 50,unique = true)
     private String identify2;
 
-    @Column(length = 50,unique = true)
+    @Column(length = 50)
     private String identify3;
-    @Column(length = 50,unique = true)
+    @Column(length = 50)
     private String identify4;
+
+    @DateTimeFormat
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
 }
