@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -28,7 +29,7 @@ public class ProductResponse extends BaseAuditDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String identify4;
 
-    public ProductResponse(LocalDate createdAt, String createdBy, LocalDate updatedAt, String updatedBy) {
+    public ProductResponse(LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, String updatedBy) {
         super(createdAt, createdBy, updatedAt, updatedBy);
     }
 }

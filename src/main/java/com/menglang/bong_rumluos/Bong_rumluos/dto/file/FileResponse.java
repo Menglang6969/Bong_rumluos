@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -26,7 +27,7 @@ public class FileResponse extends BaseAuditDTO {
     @JsonProperty(index = 7)
     private Boolean isTrash;
 
-    public FileResponse(LocalDate createdAt, String createdBy, LocalDate updatedAt, String updatedBy) {
+    public FileResponse(LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, String updatedBy) {
         super(createdAt, createdBy, updatedAt, updatedBy);
     }
 }
