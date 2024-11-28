@@ -2,12 +2,16 @@ package com.menglang.bong_rumluos.Bong_rumluos.seeding;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.customer.CustomerMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.customer.CustomerRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.Customer;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Product;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CategoryRepository;
+import com.menglang.bong_rumluos.Bong_rumluos.repositories.CustomerRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.ProductRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.services.category.CategoryService;
 import jakarta.annotation.PostConstruct;
@@ -16,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,13 +33,28 @@ public class SeedData {
    private final ProductMapper productMapper;
    private  final CategoryMapper categoryMapper;
    private final ProductRepository productRepository;
+   private final CustomerMapper customerMapper;
+   private final CustomerRepository customerRepository;
+
     @PostConstruct
     private void seedData() {
         seedCategory();
         seedProduct();
+        seedCustomer();
     }
 
-
+    private void seedCustomer(){
+        log.info("seeding customer . . . . . . . . . .");
+        CustomerRequest c1=new CustomerRequest("Menglang","012 223 322","Kandal","Web Developer","https://localhost:9090/file/angkor_wat.jpg",List.of("https://localhost:9090/file/angkor_wat.jpg"));
+        CustomerRequest c2=new CustomerRequest("JongLong","012 223 321","Kandal","Operation Officer","https://localhost:9090/file/angkor_wat.jpg",List.of("https://localhost:9090/file/angkor_wat.jpg"));
+        CustomerRequest c3=new CustomerRequest("MengSorng","012 223 329","Kandal","Sale Outdoor","https://localhost:9090/file/angkor_wat.jpg",List.of("https://localhost:9090/file/angkor_wat.jpg"));
+        List<Customer> customers=Stream.of(c1,c2,c3).map(this.customerMapper::toEntity).toList();
+        try{
+            customerRepository.saveAll(customers);
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
     private void seedCategory() {
         log.info("seeding category . . . . . . . . . .");
         CategoryDTO cat1 = new CategoryDTO("Phone", "Smart Phone", "#eee", null);

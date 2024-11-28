@@ -47,7 +47,7 @@ public class FileController {
 
     @GetMapping("/find-all")
     public ResponseEntity<List<FileResponse>> findAll(
-            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "page",defaultValue = "1") int page,
             @RequestParam(name = "page-size",defaultValue = "10") int size,
             @RequestParam(name="is-trash",defaultValue = "false") boolean isTrash,
             @RequestParam(name = "query",defaultValue = "") String query

@@ -4,9 +4,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @Setter
@@ -14,13 +12,20 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "customers")
+@Table(name = "customers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "phone"})
+},
+        indexes = {
+                @Index(name = "idx_customer_name", columnList = "name"),
+                @Index(name = "idx_phone", columnList = "phone")
+        }
+)
 public class Customer extends BaseAuditEntity<Long> {
 
     @Column(length = 50)
     private String name;
 
-    @Column(length = 30,unique = true)
+    @Column(length = 30, unique = true)
     private String phone;
 
     private String address;
@@ -33,7 +38,5 @@ public class Customer extends BaseAuditEntity<Long> {
     @Column(name = "doc_urls")
     private List<String> docsUrls;
 
-    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true)
-    @Builder.Default
-    private Set<Loan> loans=new HashSet<>();
+
 }
