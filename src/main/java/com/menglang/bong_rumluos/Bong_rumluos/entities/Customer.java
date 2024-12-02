@@ -20,6 +20,7 @@ import java.util.List;
                 @Index(name = "idx_phone", columnList = "phone")
         }
 )
+
 public class Customer extends BaseAuditEntity<Long> {
 
     @Column(length = 50)

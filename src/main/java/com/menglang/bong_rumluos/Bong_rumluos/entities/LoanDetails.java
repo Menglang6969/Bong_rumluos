@@ -5,6 +5,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Setter
@@ -20,16 +21,16 @@ public class LoanDetails extends BaseAuditEntity<Long> {
     private LocalDate repaymentDate;
 
     @Column(name = "total_repayment",nullable = false)//amount to pay every month
-    private Double totalRepayment;
+    private BigDecimal totalRepayment;
 
     @Column(nullable  = false)
-    private Double principal; //base amount
+    private BigDecimal principal; //base amount
 
-    @Column(nullable = false)
-    private Double interest;//income
+    @Column(nullable = false,name = "interest_payment")
+    private BigDecimal interestPayment;
 
     @Column(name = "outstanding_balance")//rest of money
-    private Double outstandingBalance;
+    private BigDecimal outstandingBalance;
 
     @ManyToOne
     @JoinColumn(name = "loan_id")
@@ -37,6 +38,5 @@ public class LoanDetails extends BaseAuditEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-
 
 }

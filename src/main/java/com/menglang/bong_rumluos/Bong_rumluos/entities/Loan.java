@@ -2,6 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.entities;
 
 import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.Terms;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,14 +17,28 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "loans")
+@Table(name = "loans",
+        indexes = {
+                @Index(name = "idx_loan_key", columnList = "loanKey")
+        }
+)
 public class Loan extends BaseAuditEntity<Long> {
 
+    @Column(name = "loan_key",unique = true)
+    private String loanKey;
+
+    @Column(name = "total_amount")
+    @Transient
     private BigDecimal totalAmount;
     private Short rate;
-    private Short term;
+
+    @Enumerated(EnumType.STRING)
+    private Terms term;
+
     private BigDecimal principal;
-    private BigDecimal amount;
+
+    @Column(name = "total_interest")
+    private BigDecimal totalInterest;
     private Short alert;
 
     @Enumerated(EnumType.STRING)

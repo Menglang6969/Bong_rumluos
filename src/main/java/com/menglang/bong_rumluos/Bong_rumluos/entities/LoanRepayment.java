@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "loan_repayments")
 @Setter
@@ -21,7 +23,7 @@ public class LoanRepayment extends BaseAuditEntity<Long> {
     private LoanDetails loanDetails;
 
     @Column(name = "repayment_date")
-    private LocalDate repaymentDate;
+    private LocalDateTime repaymentDate;
 
     @Column(name = "amount_repay")
     private BigDecimal amountRepay;
@@ -33,5 +35,4 @@ public class LoanRepayment extends BaseAuditEntity<Long> {
 
     @Transient
     private BigDecimal totalPayment;
-
 }
