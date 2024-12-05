@@ -20,14 +20,16 @@ public class LoanDetails extends BaseAuditEntity<Long> {
     @Column(name = "repayment_date")
     private LocalDate repaymentDate;
 
-    @Column(name = "total_repayment",nullable = false)//amount to pay every month
-    private BigDecimal totalRepayment;
 
     @Column(nullable  = false)
-    private BigDecimal principal; //base amount
+    private BigDecimal principal; //monthly payment
 
     @Column(nullable = false,name = "interest_payment")
-    private BigDecimal interestPayment;
+    private BigDecimal interestPayment; //interest payment
+
+    @Column(name = "interestCap",nullable = false)//amount to pay every month
+    private BigDecimal interestCap; //base principal
+
 
     @Column(name = "outstanding_balance")//rest of money
     private BigDecimal outstandingBalance;

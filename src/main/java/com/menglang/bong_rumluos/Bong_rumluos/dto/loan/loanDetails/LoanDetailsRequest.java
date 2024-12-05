@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @Builder
 public class LoanDetailsRequest {
     private LocalDate repaymentDate;
-    private BigDecimal totalRepayment;
     private BigDecimal principal; //base amount
     private BigDecimal interestPayment;
+    private BigDecimal interestCap;
     private BigDecimal outstandingBalance;
     private Long loan;
     private LoanStatus status;

@@ -9,10 +9,12 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Customer;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Product;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.SequenceNumber;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CategoryRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CustomerRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.ProductRepository;
+import com.menglang.bong_rumluos.Bong_rumluos.repositories.SequenceNumberRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.services.category.CategoryService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,12 +38,24 @@ public class SeedData {
    private final ProductRepository productRepository;
    private final CustomerMapper customerMapper;
    private final CustomerRepository customerRepository;
+   private final SequenceNumberRepository sequenceNumberRepository;
 
     @PostConstruct
     private void seedData() {
         seedCategory();
         seedProduct();
         seedCustomer();
+        seedSequenceNumber();
+    }
+    private void seedSequenceNumber(){
+        log.info("seeding sequence number . . . . . . . . . .");
+        SequenceNumber sequenceNumber=new SequenceNumber(1L,BigDecimal.ZERO,BigDecimal.ZERO);
+        try {
+           SequenceNumber savedNumber= sequenceNumberRepository.save(sequenceNumber);
+           log.info("sequence saved: {}",savedNumber.getLoanNumber());
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     private void seedCustomer(){

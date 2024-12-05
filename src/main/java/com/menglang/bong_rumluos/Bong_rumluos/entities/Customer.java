@@ -39,5 +39,4 @@ public class Customer extends BaseAuditEntity<Long> {
     @Column(name = "doc_urls")
     private List<String> docsUrls;
 
-
 }

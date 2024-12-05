@@ -30,7 +30,7 @@ public class Loan extends BaseAuditEntity<Long> {
     @Column(name = "total_amount")
     @Transient
     private BigDecimal totalAmount;
-    private Short rate;
+    private short rate;
 
     @Enumerated(EnumType.STRING)
     private Terms term;
@@ -39,7 +39,7 @@ public class Loan extends BaseAuditEntity<Long> {
 
     @Column(name = "total_interest")
     private BigDecimal totalInterest;
-    private Short alert;
+    private short alert;
 
     @Enumerated(EnumType.STRING)
     private LoanStatus loanStatus;

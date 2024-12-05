@@ -1,10 +1,12 @@
 package com.menglang.bong_rumluos.Bong_rumluos.dto.loan.loanDetails;
 
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
-import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.StatusResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Setter
@@ -12,10 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanDetailsResponse {
+    Long id;
     private LocalDate repaymentDate;
-    private Double totalRepayment;
-    private Double principal; //base amount
-    private Double interestPayment;
-    private Double outstandingBalance;
+    private BigDecimal principal; //base amount
+    private BigDecimal interestPayment;
+    private BigDecimal outstandingBalance;
     private LoanStatus status;
 }
