@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customer")
 @RequiredArgsConstructor
-public class Loan {
-    private static final Logger log = LoggerFactory.getLogger(Loan.class);
+public class LoanController {
+    private static final Logger log = LoggerFactory.getLogger(LoanController.class);
     private final LoanService loanService;
     private final LoanDetailsService loanDetailsService;
 
@@ -36,9 +36,21 @@ public class Loan {
         return ResponseEntity.ok(loanService.findByCustomerId(cid));
     }
 
-    @PatchMapping("/{cid}/loans/loan-details/{id}")
+    @PatchMapping("/loans/loan-details/{id}")
     public ResponseEntity<LoanResponse> updateLoanDetails(@PathVariable Long cid, @PathVariable Long id) {
         return ResponseEntity.ok(loanDetailsService.updateLoanDetailsStatus(id));
     }
+
+    @GetMapping("/loans/all")
+    public ResponseEntity<List<LoanResponse>> getAllLoans(
+            @RequestParam(name = "page",defaultValue = "1") int page,
+            @RequestParam(name = "limit",defaultValue = "10") short limit,
+            @RequestParam(name = "order-by",defaultValue = "loanKey") String orderBy,
+            @RequestParam(name = "sort-by",defaultValue = "ASC") String sortBy,
+            @RequestParam(name = "query",defaultValue = "")String query
+    ){
+        return ResponseEntity.ok(loanService.findAll(page,limit,orderBy,sortBy,query));
+    }
+
 
 }

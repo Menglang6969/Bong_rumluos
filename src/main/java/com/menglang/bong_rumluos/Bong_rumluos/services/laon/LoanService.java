@@ -13,7 +13,7 @@ public interface LoanService {
     LoanResponse create(LoanDto loanDto) throws BadRequestException;
     LoanResponse view(long loanId) throws NotFoundException;
 //    LoanResponse findByLoanKey(String loanKey) throws NotFoundException;
-    Page<LoanResponse> findAll(int page,int limit,String orderBy,String sortBy,String query) throws BadRequestException;
+    List<LoanResponse> findAll(int page,int limit,String orderBy,String sortBy,String query) throws BadRequestException;
     LoanResponse delete(long loanId) throws BadRequestException;
-    List<LoanResponse> findByCustomerId(long customer_id) throws BadRequestException;
+    List<LoanResponse> findByCustomerId(Long customer_id) throws BadRequestException;
 }

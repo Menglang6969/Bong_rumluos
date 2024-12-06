@@ -4,6 +4,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.Customer;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Loan;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.LoanDetails;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.GenerateKey;
@@ -11,7 +12,6 @@ import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CustomerRepository;
-import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanDetailsRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.GenerateNumber;
 import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.factory.GenerateKeyFactory;
@@ -21,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,22 +86,28 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Page<LoanResponse> findAll(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
-        return null;
+    public List<LoanResponse> findAll(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
+        Sort.Direction order = orderBy.equals("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(order, orderBy);
+        Pageable pageable = PageRequest.of(page - 1, limit, sort);
+        log.info(" query: {} ",query);
+        Page<Loan> loansPage = loanRepository.findByLoanKeyOrCustomerNameOrPhone(query, pageable);
+        return loansPage.getContent().stream().map(this.loanMapper::toLoanResponse).toList();
     }
 
     @Override
     public LoanResponse delete(long loanId) throws BadRequestException {
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new NotFoundException("Loan Not Found"));
-        if (loan!=null){
+        if (loan != null) {
             loanRepository.delete(loan);
         }
         return this.loanMapper.toLoanResponse(loan);
     }
 
     @Override
-    public List<LoanResponse> findByCustomerId(long customer_id) throws BadRequestException {
-        List<Loan> loans = this.loanRepository.findByCustomerId(customer_id);
+    public List<LoanResponse> findByCustomerId(Long customer_id) throws BadRequestException {
+        Customer customer = customerRepository.findById(customer_id).orElseThrow(() -> new NotFoundException("Customer Not Found"));
+        List<Loan> loans = this.loanRepository.findByCustomerId(customer);
         return loans.stream().map(this.loanMapper::toLoanResponse).toList();
     }
 
