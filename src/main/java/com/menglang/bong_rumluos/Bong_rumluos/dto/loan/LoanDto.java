@@ -3,9 +3,11 @@ package com.menglang.bong_rumluos.Bong_rumluos.dto.loan;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanType;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.Terms;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @Builder
 @Setter
 @Getter
+@AllArgsConstructor
 public class LoanDto {
     @NotNull
     @Size(min = 1)
@@ -37,7 +40,10 @@ public class LoanDto {
     private int alert;
     @NotNull
     private Long customer_id;
-
+    @NotNull
+    private Long product;
     private LoanStatus loanStatus;
     private LoanType type;
+    private short penaltyRate;
+
 }

@@ -37,7 +37,7 @@ public class LoanController {
     }
 
     @PatchMapping("/loans/loan-details/{id}")
-    public ResponseEntity<LoanResponse> updateLoanDetails(@PathVariable Long cid, @PathVariable Long id) {
+    public ResponseEntity<LoanResponse> updateLoanDetails(@PathVariable Long id) {
         return ResponseEntity.ok(loanDetailsService.updateLoanDetailsStatus(id));
     }
 
@@ -51,6 +51,5 @@ public class LoanController {
     ){
         return ResponseEntity.ok(loanService.findAll(page,limit,orderBy,sortBy,query));
     }
-
 
 }

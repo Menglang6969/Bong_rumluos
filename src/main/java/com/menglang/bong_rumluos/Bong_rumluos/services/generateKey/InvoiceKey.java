@@ -19,7 +19,7 @@ public class InvoiceKey implements GenerateNumber{
         BigDecimal lastNumber = sequenceNumber.getInvoiceNumber();
 
         BigDecimal newKey = lastNumber.add(BigDecimal.ONE);
-        String formattedNumber = String.format("%07d", newKey);
+        String formattedNumber = String.format("%07d",newKey.longValue());
         try{
             sequenceNumber.setInvoiceNumber(newKey);
             sequenceNumberRepository.save(sequenceNumber);

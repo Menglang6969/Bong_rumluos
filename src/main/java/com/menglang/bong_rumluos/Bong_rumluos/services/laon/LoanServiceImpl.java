@@ -13,6 +13,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadReq
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CustomerRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanRepository;
+import com.menglang.bong_rumluos.Bong_rumluos.repositories.ProductRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.GenerateNumber;
 import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.factory.GenerateKeyFactory;
 import com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate.LoanCalculateService;
@@ -41,6 +42,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanFactory loanFactory;
     private final LoanRepository loanRepository;
     private final CustomerRepository customerRepository;
+    private final ProductRepository productRepository;
     private final LoanMapper loanMapper;
     private final GenerateKeyFactory generateKeyFactory;
 
@@ -48,8 +50,8 @@ public class LoanServiceImpl implements LoanService {
     @Transactional
     public LoanResponse create(LoanDto loanDto) throws BadRequestException {
         LoanCalculateService loanProcess = loanFactory.getPaymentService(loanDto.getType());
-        Loan loan = loanMapper.toLoan(loanDto, customerRepository);
-        log.info("customer map: {}", loan.getCustomer().getId());
+        Loan loan = loanMapper.toLoan(loanDto, customerRepository,productRepository);
+
         List<LoanSchedulerResponse> loanSchedulerResponse = loanProcess.loanCalculator(loanDto.getPrincipal(), loanDto.getRate(), loanDto.getStartDate(), loanDto.getEndDate());
 
         Set<LoanDetails> setLoanDetails = new HashSet<>();
@@ -90,7 +92,7 @@ public class LoanServiceImpl implements LoanService {
         Sort.Direction order = orderBy.equals("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(order, orderBy);
         Pageable pageable = PageRequest.of(page - 1, limit, sort);
-        log.info(" query: {} ",query);
+
         Page<Loan> loansPage = loanRepository.findByLoanKeyOrCustomerNameOrPhone(query, pageable);
         return loansPage.getContent().stream().map(this.loanMapper::toLoanResponse).toList();
     }
@@ -114,7 +116,7 @@ public class LoanServiceImpl implements LoanService {
     private LoanDetails extractLoanDetails(LoanSchedulerResponse emi, Loan loan) {
         LoanDetails loanDetails = new LoanDetails();
         loanDetails.setLoan(loan);
-        loanDetails.setStatus(LoanStatus.START);
+        loanDetails.setStatus(LoanStatus.WAITING);
         loanDetails.setPrincipal(emi.getPrincipalPayment());
         loanDetails.setInterestPayment(emi.getInterestPayment());
         loanDetails.setOutstandingBalance(emi.getOutstandingBalance());

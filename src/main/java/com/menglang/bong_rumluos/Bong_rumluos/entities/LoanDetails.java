@@ -20,7 +20,6 @@ public class LoanDetails extends BaseAuditEntity<Long> {
     @Column(name = "repayment_date")
     private LocalDate repaymentDate;
 
-
     @Column(nullable  = false)
     private BigDecimal principal; //monthly payment
 
@@ -34,9 +33,13 @@ public class LoanDetails extends BaseAuditEntity<Long> {
     @Column(name = "outstanding_balance")//rest of money
     private BigDecimal outstandingBalance;
 
+    @Column(name = "is_penalty")
+    private Boolean isPenalty;
+
     @ManyToOne
     @JoinColumn(name = "loan_id")
     private Loan loan;
+
 
     @Enumerated(EnumType.STRING)
     private LoanStatus status;

@@ -2,6 +2,8 @@ package com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.utils.BigDecimalUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,10 +15,13 @@ import java.util.List;
 @Component
 public class EMILoan implements LoanCalculateService {
 
+    private static final Logger log = LoggerFactory.getLogger(EMILoan.class);
+
     @Override
     public List<LoanSchedulerResponse> loanCalculator(BigDecimal principal, double rate, LocalDate startDate, LocalDate endDate) {
         // Calculate loan tenure in months
-        int tenureMonths = (int) ChronoUnit.MONTHS.between(startDate, endDate);
+        int tenureMonths = (int) ChronoUnit.MONTHS.between(startDate, endDate)+1;
+        log.info(" total months payments: {}",tenureMonths);
         List<LoanSchedulerResponse> emiSchedule = new ArrayList<>();
         BigDecimal monthlyRate = BigDecimal.valueOf(rate).divide(BigDecimal.valueOf(12 * 100), 10, RoundingMode.HALF_UP);
 
@@ -27,7 +32,7 @@ public class EMILoan implements LoanCalculateService {
         BigDecimal remainingPrincipal = principal;
 
         try {
-            for (int month = 1; month <= tenureMonths; month++) {
+            for (int month = 0; month <= tenureMonths-1; month++) {
                 // Calculate interest and principal components for the current month
                 BigDecimal interest = remainingPrincipal.multiply(monthlyRate).setScale(2, RoundingMode.HALF_UP);
                 BigDecimal principalPayment = emi.subtract(interest);

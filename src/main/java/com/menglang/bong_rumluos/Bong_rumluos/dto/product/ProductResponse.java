@@ -7,6 +7,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryBaseResponse;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Setter
@@ -17,6 +18,8 @@ public class ProductResponse extends BaseAuditDTO {
     private String description;
     private String imageUrl;
     private String color;
+    private BigDecimal basePrice;
+    private BigDecimal sellPrice;
     private CategoryBaseResponse category;
     private String identify1;
     private String identify2;

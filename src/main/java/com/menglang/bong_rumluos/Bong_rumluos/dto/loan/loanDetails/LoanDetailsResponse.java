@@ -19,5 +19,6 @@ public class LoanDetailsResponse {
     private BigDecimal principal; //base amount
     private BigDecimal interestPayment;
     private BigDecimal outstandingBalance;
+    private Boolean isPenalty;
     private LoanStatus status;
 }

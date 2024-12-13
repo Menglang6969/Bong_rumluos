@@ -8,14 +8,20 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+
 @Builder
-@Validated
 public record ProductRequest(
         @Nonnull
         @NotBlank(message = "Name Must be not Blank")
         @Size(min = 3,message = "Product Name have at lease 3 Characters")
         String name,
         String description,
+
+        @Nonnull
+        BigDecimal basePrice,
+        @Nonnull
+        BigDecimal sellPrice,
         @Nonnull
         @NotBlank(message = "Category Must be Not Blank")
         Long categoryId,

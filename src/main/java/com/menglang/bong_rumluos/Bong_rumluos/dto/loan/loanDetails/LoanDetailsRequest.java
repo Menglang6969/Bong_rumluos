@@ -17,6 +17,7 @@ public class LoanDetailsRequest {
     private BigDecimal interestCap;
     private BigDecimal outstandingBalance;
     private Long loan;
+    private Boolean isPenalty;
     private LoanStatus status;
 
 }

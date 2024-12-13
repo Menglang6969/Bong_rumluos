@@ -9,6 +9,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Setter
@@ -53,7 +54,35 @@ public class Loan extends BaseAuditEntity<Long> {
     @JoinColumn(name = "customer_id",nullable = false)
     private Customer customer;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id",nullable = false)
+    private Product product;
+
+    @Column(name = "penalty_rate", precision = 5, scale = 2)
+    private short penaltyRate;
+
     @OneToMany(mappedBy = "loan",orphanRemoval = true,cascade = CascadeType.ALL)
     @Builder.Default
     private Set<LoanDetails> loanDetails=new HashSet<>();
+
+    public BigDecimal getTotalAmount() {
+        if (principal != null && totalInterest != null) {
+            return principal.add(totalInterest);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Loan loan = (Loan) object;
+        return rate == loan.rate && alert == loan.alert && Objects.equals(loanKey, loan.loanKey) && Objects.equals(totalAmount, loan.totalAmount) && term == loan.term && Objects.equals(principal, loan.principal) && Objects.equals(totalInterest, loan.totalInterest) && loanStatus == loan.loanStatus && Objects.equals(startDate, loan.startDate) && Objects.equals(endDate, loan.endDate) && Objects.equals(customer, loan.customer) && Objects.equals(loanDetails, loan.loanDetails);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(loanKey, totalAmount, rate, term, principal, totalInterest, alert, loanStatus, startDate, endDate, customer, loanDetails);
+    }
 }
+

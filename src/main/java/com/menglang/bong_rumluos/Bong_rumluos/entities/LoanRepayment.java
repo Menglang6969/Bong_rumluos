@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loan_repayments")
@@ -19,20 +18,24 @@ import java.time.LocalDateTime;
 public class LoanRepayment extends BaseAuditEntity<Long> {
 
     @ManyToOne
-    @JoinColumn(name = "loan_details_id",nullable = false)
+    @JoinColumn(name = "invoice_id",nullable = false)
+    private Invoice invoiceId;
+
+    @ManyToOne
+    @JoinColumn(name = "loan_details_id", nullable = false)
     private LoanDetails loanDetails;
 
     @Column(name = "repayment_date")
-    private LocalDateTime repaymentDate;
+    private LocalDate repaymentDate;
 
     @Column(name = "amount_repay")
     private BigDecimal amountRepay;
 
-    @Column(length = 100)
-    private String description;
+    @Column(name = "penalty_rate")
+    private Long penaltyRate;
 
     private BigDecimal penalty;
 
-    @Transient
-    private BigDecimal totalPayment;
+    private String noted;
+
 }
