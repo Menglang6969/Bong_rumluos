@@ -42,7 +42,7 @@ public class LoanDto {
     private Long customer_id;
     @NotNull
     private Long product;
-    private LoanStatus loanStatus;
+
     private LoanType type;
     private short penaltyRate;
 

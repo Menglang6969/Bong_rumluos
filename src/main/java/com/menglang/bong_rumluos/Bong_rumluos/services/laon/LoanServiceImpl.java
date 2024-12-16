@@ -49,15 +49,18 @@ public class LoanServiceImpl implements LoanService {
     @Override
     @Transactional
     public LoanResponse create(LoanDto loanDto) throws BadRequestException {
+
         LoanCalculateService loanProcess = loanFactory.getPaymentService(loanDto.getType());
         Loan loan = loanMapper.toLoan(loanDto, customerRepository,productRepository);
-
+        log.info("loan: {}",loan.getCustomer().getId());
         List<LoanSchedulerResponse> loanSchedulerResponse = loanProcess.loanCalculator(loanDto.getPrincipal(), loanDto.getRate(), loanDto.getStartDate(), loanDto.getEndDate());
 
         Set<LoanDetails> setLoanDetails = new HashSet<>();
         BigDecimal totalInterestAndPrincipal = BigDecimal.ZERO;
 
         if (!loanSchedulerResponse.isEmpty()) {
+            log.info("loan scheduler: {}",loanSchedulerResponse.get(0).getPrincipalPayment());
+
             for (LoanSchedulerResponse emi : loanSchedulerResponse) {
                 LoanDetails loanDetails = extractLoanDetails(emi, loan);
                 totalInterestAndPrincipal = totalInterestAndPrincipal.add(emi.getPrincipalPayment()).setScale(2, RoundingMode.HALF_UP);
@@ -71,11 +74,12 @@ public class LoanServiceImpl implements LoanService {
             loan.setTotalAmount(totalInterestAndPrincipal);
             loan.setTotalInterest(totalInterestAndPrincipal.subtract(loan.getPrincipal()));
             loan.setLoanKey(generateLoanKey());
-
+            log.info("loan mapper: {}",loan.getLoanKey());
             Loan savedLoan = loanRepository.save(loan);
             return loanMapper.toLoanResponse(savedLoan);
 
         } catch (Exception e) {
+            log.warn("loan error: {}",e.getLocalizedMessage());
             throw new BadRequestException(e.getMessage());
         }
 

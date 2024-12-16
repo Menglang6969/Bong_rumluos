@@ -25,9 +25,22 @@ public class EMILoan implements LoanCalculateService {
         List<LoanSchedulerResponse> emiSchedule = new ArrayList<>();
         BigDecimal monthlyRate = BigDecimal.valueOf(rate).divide(BigDecimal.valueOf(12 * 100), 10, RoundingMode.HALF_UP);
 
+        BigDecimal emi;
+        if (monthlyRate.compareTo(BigDecimal.ZERO) == 0) {
+            // Handle zero interest rate: evenly divide principal over months
+            emi = principal.divide(BigDecimal.valueOf(tenureMonths), 2, RoundingMode.HALF_UP);
+        } else {
+            // EMI calculation formula
+            emi = principal.multiply(monthlyRate.multiply((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths)))
+                    .divide((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths).subtract(BigDecimal.ONE), 2, RoundingMode.HALF_UP);
+        }
+
         // EMI calculation formula
-        BigDecimal emi = principal.multiply(monthlyRate.multiply((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths)))
-                .divide((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths).subtract(BigDecimal.ONE), 2, RoundingMode.HALF_UP);
+//        BigDecimal emi = principal.multiply(monthlyRate.multiply((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths)))
+//                .divide((BigDecimal.ONE.add(monthlyRate)).pow(tenureMonths).subtract(BigDecimal.ONE), 2, RoundingMode.HALF_UP);
+
+
+        log.info(" emi: {}",emi);
 
         BigDecimal remainingPrincipal = principal;
 

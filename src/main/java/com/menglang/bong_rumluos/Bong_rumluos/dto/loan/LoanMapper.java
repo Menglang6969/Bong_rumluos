@@ -36,6 +36,7 @@ public interface LoanMapper {
     @Mapping(target = "totalAmount", ignore = true)
     @Mapping(target = "totalInterest", ignore = true)
     @Mapping(target = "loanKey", ignore = true)
+    @Mapping(target = "loanStatus",ignore = true)
     Loan toLoan(LoanDto loanDto, @Context CustomerRepository customerRepository, @Context ProductRepository productRepository);
 
     @Named("mapCustomer")
