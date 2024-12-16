@@ -1,6 +1,7 @@
 package com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.utils.CheckWeekend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,7 @@ public class ScheduleLoan implements LoanCalculateService {
             schedulerPay.setInterestCap(principal);
             schedulerPay.setInterestPayment(interestCap);
             schedulerPay.setOutstandingBalance(outstandingBalance);
-            schedulerPay.setRepaymentDate(startDate.plusMonths(month));
+            schedulerPay.setRepaymentDate(CheckWeekend.validateWeekend(startDate.plusMonths(month)));
             schedulerPay.setPrincipalPayment(monthlyPrincipal);
             schedule.add(schedulerPay);
         }

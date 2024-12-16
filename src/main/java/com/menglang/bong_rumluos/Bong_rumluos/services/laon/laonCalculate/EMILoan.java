@@ -2,6 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.utils.BigDecimalUtils;
+import com.menglang.bong_rumluos.Bong_rumluos.utils.CheckWeekend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class EMILoan implements LoanCalculateService {
 
                 // Create and populate the LoanSchedulerResponse object
                 LoanSchedulerResponse emiScheduler = new LoanSchedulerResponse();
-                emiScheduler.setRepaymentDate(startDate.plusMonths(month));
+                emiScheduler.setRepaymentDate(CheckWeekend.validateWeekend(startDate.plusMonths(month)));
                 emiScheduler.setPrincipalPayment(emi.setScale(2, RoundingMode.HALF_UP)); // Principal Payment
                 emiScheduler.setInterestPayment(interest); // Interest Payment
                 emiScheduler.setOutstandingBalance(BigDecimalUtils.convertToZeroIfNegative(remainingPrincipal.subtract(principalPayment).setScale(2, RoundingMode.HALF_UP))); // Remaining Balance
@@ -66,7 +67,7 @@ public class EMILoan implements LoanCalculateService {
                 // Log or print the result
                 String result = String.format(
                         "%s | Principal: %s | Interest Capital: %s | INT.PAYMENT: %s | OUTSTANDING BAL: %s",
-                        startDate.plusMonths(month),
+                        CheckWeekend.validateWeekend(startDate.plusMonths(month)),
                         principalPayment,
                         emi,
                         interest,
