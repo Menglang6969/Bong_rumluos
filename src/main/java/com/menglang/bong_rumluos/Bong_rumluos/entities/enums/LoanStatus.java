@@ -5,5 +5,6 @@ public enum LoanStatus {
     PROCESSING,
     WAITING,
     DONE,
-    FINISH
+    FINISH,
+    CLOSED
 }

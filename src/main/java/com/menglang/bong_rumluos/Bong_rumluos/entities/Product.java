@@ -3,6 +3,8 @@ import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,6 +35,12 @@ public class Product extends BaseAuditEntity<Long> {
     private String imageUrl;
 
     private String color;
+
+    @Column(name = "base_price")
+    private BigDecimal basePrice;
+
+    @Column(name = "sellPrice")
+    private BigDecimal sellPrice;
 
     @Column(length = 50,unique = true)
     private String identify1;

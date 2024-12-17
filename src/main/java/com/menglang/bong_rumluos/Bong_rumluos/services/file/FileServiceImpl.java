@@ -62,7 +62,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public Page<File> findAll(int page, int pageSize, boolean isTrash, String query) throws BadRequestException {
         Sort sort=Sort.by(Sort.Direction.DESC,"name");
-        Pageable pageable= PageRequest.of(page,pageSize,sort);
+        Pageable pageable= PageRequest.of(page-1,pageSize,sort);
         return fileRepository.findAllByOriginalNameContainsIgnoreCaseAndDeletedAtIsNull(query,pageable);
 
     }

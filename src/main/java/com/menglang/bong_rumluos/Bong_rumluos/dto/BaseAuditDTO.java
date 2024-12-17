@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class BaseAuditDTO {
-
+    private Long id;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
