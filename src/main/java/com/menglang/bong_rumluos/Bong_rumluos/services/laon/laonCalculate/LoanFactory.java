@@ -1,6 +1,7 @@
 package com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate;
 
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanType;
+import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -23,10 +24,15 @@ public class LoanFactory {
     public LoanCalculateService getPaymentService(LoanType type) {
         log.info("Loan type: {} toString {}",type,type.toString());
         log.info("Loan Services: {}",mapLoanServices.get(type.toString()));
-        LoanCalculateService service = mapLoanServices.get(type.toString());
-        if (service == null) {
-            throw new IllegalArgumentException("Invalid payment type: " + type);
+        try{
+            LoanCalculateService service = mapLoanServices.get(type.toString());
+            if (service == null) {
+                throw new IllegalArgumentException("Invalid payment type: " + type);
+            }
+            return service;
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
         }
-        return service;
+
     }
 }

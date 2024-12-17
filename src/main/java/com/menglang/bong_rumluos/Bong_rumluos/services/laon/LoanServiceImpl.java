@@ -1,9 +1,6 @@
 package com.menglang.bong_rumluos.Bong_rumluos.services.laon;
 
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanMapper;
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.*;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Customer;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Loan;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.LoanDetails;
@@ -18,6 +15,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.GenerateNumbe
 import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.factory.GenerateKeyFactory;
 import com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate.LoanCalculateService;
 import com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate.LoanFactory;
+import com.menglang.bong_rumluos.Bong_rumluos.services.loanDetails.LoanDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +40,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanFactory loanFactory;
     private final LoanRepository loanRepository;
     private final CustomerRepository customerRepository;
+    private final LoanDetailsService loanDetailsService;
     private final ProductRepository productRepository;
     private final LoanMapper loanMapper;
     private final GenerateKeyFactory generateKeyFactory;
@@ -50,7 +49,9 @@ public class LoanServiceImpl implements LoanService {
     @Transactional
     public LoanResponse create(LoanDto loanDto) throws BadRequestException {
 
+        log.info(" loan restructure: {}",loanDto.getType());
         LoanCalculateService loanProcess = loanFactory.getPaymentService(loanDto.getType());
+        log.info(" loanProcess......");
         Loan loan = loanMapper.toLoan(loanDto, customerRepository,productRepository);
         log.info("loan: {}",loan.getCustomer().getId());
         List<LoanSchedulerResponse> loanSchedulerResponse = loanProcess.loanCalculator(loanDto.getPrincipal(), loanDto.getRate(), loanDto.getStartDate(), loanDto.getEndDate());
@@ -117,6 +118,7 @@ public class LoanServiceImpl implements LoanService {
         return loans.stream().map(this.loanMapper::toLoanResponse).toList();
     }
 
+
     private LoanDetails extractLoanDetails(LoanSchedulerResponse emi, Loan loan) {
         LoanDetails loanDetails = new LoanDetails();
         loanDetails.setLoan(loan);
@@ -132,6 +134,30 @@ public class LoanServiceImpl implements LoanService {
     private String generateLoanKey() {
         GenerateNumber generateKey = generateKeyFactory.getKeyGenerate(GenerateKey.LoanKey);
         return generateKey.generateKey();
+    }
+
+
+    @Override
+    @Transactional
+    public LoanResponse restructure(LoanRestructureDto restructureDto) throws BadRequestException {
+        log.info(" loan id: {}",restructureDto.getLoanId());
+        log.info(" loan type: {}",restructureDto.getType());
+        BigDecimal outStandingBalance=loanDetailsService.getOutStandingBalanceCurrentLoan(restructureDto.getLoanId());
+        if (outStandingBalance==null) throw new BadRequestException("This Loan Out of Payment pls check it again...");
+        LoanDto loanDto=LoanDto.builder()
+                .alert(restructureDto.getAlert())
+                .customer_id(restructureDto.getCustomer_id())
+                .rate(restructureDto.getRate())
+                .term(restructureDto.getTerm())
+                .product(restructureDto.getProduct())
+                .type(restructureDto.getType())
+                .penaltyRate(restructureDto.getPenaltyRate())
+                .principal(outStandingBalance)
+                .startDate(restructureDto.getStartDate())
+                .endDate(restructureDto.getEndDate())
+                .build();
+
+            return this.create(loanDto);
     }
 
 

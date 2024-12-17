@@ -41,12 +41,14 @@ public interface LoanMapper {
 
     @Named("mapCustomer")
     default Customer mapCustomer(Long cid, @Context CustomerRepository customerRepository, @Context ProductRepository productRepository) {
+        log.info(" customer {}",cid);
         return customerRepository.findById(cid).orElseThrow(() -> new NotFoundException("Customer Not Found"));
 
     }
 
     @Named("mapProduct")
     default Product mapProduct(Long cid, @Context CustomerRepository customerRepository, @Context ProductRepository productRepository) {
+        log.info(" product {}",cid);
         return productRepository.findById(cid).orElseThrow(() -> new NotFoundException("Product Not Found"));
 
     }

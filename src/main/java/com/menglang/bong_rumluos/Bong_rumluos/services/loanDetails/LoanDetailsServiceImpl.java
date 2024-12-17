@@ -5,6 +5,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Loan;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.LoanDetails;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
+import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanDetailsRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanRepository;
@@ -13,6 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +59,37 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
 
     }
 
+    @Override
+    @Transactional
+    public BigDecimal getOutStandingBalanceCurrentLoan(Long id) {
+        List<LoanDetails> loanDetailsList=loanDetailsRepository.findAllByLoanId(id);
+        LoanDetails loanDetailsMax =loanDetailsList.stream().max(Comparator.comparing(LoanDetails::getOutstandingBalance)).orElseThrow(NoSuchElementException::new);
+        if (loanDetailsMax!=null){
+            closeLoanAndLoanDetail(id,loanDetailsList);
+            return loanDetailsMax.getOutstandingBalance();
+        }
+        return null;
+    }
+
+
+    //when restructure loan current loan change status to finish and all details change status to closed
+    private void closeLoanAndLoanDetail(Long id,List<LoanDetails> loanDetailsList){
+        try{
+           Loan loan= loanRepository.findById(id).orElseThrow(()->new NotFoundException("Loan Not Found"));
+           loan.setLoanStatus(LoanStatus.FINISH);
+           loanRepository.save(loan);
+
+           List<LoanDetails> loanDetailsTobeUpdate=new ArrayList<>();
+           for (LoanDetails detail:loanDetailsList){
+               detail.setStatus(LoanStatus.CLOSED);
+               loanDetailsTobeUpdate.add(detail);
+           }
+
+           loanDetailsRepository.saveAll(loanDetailsTobeUpdate);
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
 
     private LoanResponse updateLoanStatus(Long id) {
         Loan loan = loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Loan Not Found"));

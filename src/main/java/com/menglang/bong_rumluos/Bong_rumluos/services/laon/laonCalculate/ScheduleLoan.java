@@ -23,6 +23,10 @@ public class ScheduleLoan implements LoanCalculateService {
                                                       LocalDate startDate, LocalDate endDate) {
 
         List<LoanSchedulerResponse> schedule = new ArrayList<>();
+        log.info(" principal :{}",principalAmount);
+        log.info(" rate :{}",annualRate);
+        log.info(" start date :{}",startDate);
+        log.info(" end date :{}",endDate);
 
         // Calculate total months
         int totalMonths = (int) ChronoUnit.MONTHS.between(startDate, endDate) + 1;
@@ -40,7 +44,7 @@ public class ScheduleLoan implements LoanCalculateService {
 
         for (int month = 0; month < totalMonths ; month++) {
             outstandingBalance = outstandingBalance.subtract(monthlyPrincipal);
-            if (outstandingBalance.compareTo(BigDecimal.ZERO) < 0) {
+            if (outstandingBalance.compareTo(BigDecimal.ZERO) <= 0 ) {
                 outstandingBalance = BigDecimal.ZERO;
             }
 

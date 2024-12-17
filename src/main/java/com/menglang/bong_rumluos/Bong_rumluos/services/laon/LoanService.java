@@ -2,6 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.services.laon;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanRestructureDto;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 
@@ -18,4 +19,7 @@ public interface LoanService {
     LoanResponse delete(long loanId) throws BadRequestException;
 
     List<LoanResponse> findByCustomerId(Long customer_id) throws BadRequestException;
+
+    LoanResponse restructure(LoanRestructureDto loanDto) throws BadRequestException;
+
 }

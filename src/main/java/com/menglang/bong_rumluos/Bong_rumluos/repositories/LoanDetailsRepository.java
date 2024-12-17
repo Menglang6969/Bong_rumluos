@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface LoanDetailsRepository extends JpaRepository<LoanDetails, Long> {
 
@@ -21,5 +23,9 @@ public interface LoanDetailsRepository extends JpaRepository<LoanDetails, Long> 
             "ORDER BY lr.repayment_date ASC",
             nativeQuery = true)
     Page<LoanDetails> findAllByLoanOrderByRepaymentDateAsc(@Param("loan_id") Long loanId, Pageable pageable);
+
+
+    @Query(value = "SELECT ld.* FROM loan_details ld INNER JOIN loans l ON l.id = ld.loan_id WHERE l.id = :loan_id AND ld.status = 'WAITING'", nativeQuery = true)
+    List<LoanDetails> findAllByLoanId(@Param("loan_id") Long loanId);
 
 }

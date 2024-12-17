@@ -2,6 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.controllers;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanRestructureDto;
 import com.menglang.bong_rumluos.Bong_rumluos.services.laon.LoanService;
 import com.menglang.bong_rumluos.Bong_rumluos.services.loanDetails.LoanDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,11 @@ public class LoanController {
             @RequestParam(name = "query",defaultValue = "")String query
     ){
         return ResponseEntity.ok(loanService.findAll(page,limit,orderBy,sortBy,query));
+    }
+
+    @PostMapping("/loans/restructure")
+    public ResponseEntity<LoanResponse> restructureLoan(@RequestBody LoanRestructureDto loanRestructureDto){
+        return ResponseEntity.ok(loanService.restructure(loanRestructureDto));
     }
 
 }
