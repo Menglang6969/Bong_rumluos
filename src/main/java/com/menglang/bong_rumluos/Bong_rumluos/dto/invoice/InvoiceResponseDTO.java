@@ -1,5 +1,7 @@
 package com.menglang.bong_rumluos.Bong_rumluos.dto.invoice;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.BaseAuditDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.customer.CustomerBaseResponse;
@@ -21,6 +23,7 @@ public class InvoiceResponseDTO extends BaseAuditDTO {
     private String invoiceNo;
     private CustomerBaseResponse customer;
     private BigDecimal totalAmount;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<RepaymentResponseDTO> loanRepayments;
     private BigDecimal totalPenalty;
     private BigDecimal totalPayment;

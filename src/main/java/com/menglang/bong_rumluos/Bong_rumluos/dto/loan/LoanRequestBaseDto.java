@@ -6,22 +6,17 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Builder
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoanDto {
-    @NotNull
-    @Size(min = 1)
-    @Positive(message = "principal must be Positive")
-    private BigDecimal principal;
+public class LoanRequestBaseDto {
 
     @NotNull
     @Positive(message = "rate must be positive")
@@ -34,7 +29,7 @@ public class LoanDto {
     @NotNull(message = "end date is null")
     private LocalDate endDate;
     @NotNull
-    @Size(min = 1, max = 7, message = "alert day must be between 1 to 7")
+    @Size(min = 1,max = 7,message = "alert day must be between 1 to 7")
     private short alert;
     @NotNull
     private Long customer_id;
@@ -44,5 +39,4 @@ public class LoanDto {
     private LoanType type;
     private BigDecimal deposit;
     private String description;
-
 }

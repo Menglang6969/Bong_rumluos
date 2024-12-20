@@ -1,21 +1,19 @@
 package com.menglang.bong_rumluos.Bong_rumluos.services.laon;
 
-import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.*;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanRestructureDto;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Customer;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Loan;
-import com.menglang.bong_rumluos.Bong_rumluos.entities.LoanDetails;
-import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.GenerateKey;
-import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.Product;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CustomerRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.ProductRepository;
-import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.GenerateNumber;
-import com.menglang.bong_rumluos.Bong_rumluos.services.generateKey.factory.GenerateKeyFactory;
-import com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate.LoanCalculateService;
-import com.menglang.bong_rumluos.Bong_rumluos.services.laon.laonCalculate.LoanFactory;
 import com.menglang.bong_rumluos.Bong_rumluos.services.loanDetails.LoanDetailsService;
+import com.menglang.bong_rumluos.Bong_rumluos.services.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,62 +25,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class LoanServiceImpl implements LoanService {
 
     private static final Logger log = LoggerFactory.getLogger(LoanServiceImpl.class);
-    private final LoanFactory loanFactory;
+
     private final LoanRepository loanRepository;
     private final CustomerRepository customerRepository;
     private final LoanDetailsService loanDetailsService;
     private final ProductRepository productRepository;
     private final LoanMapper loanMapper;
-    private final GenerateKeyFactory generateKeyFactory;
+    private final ProductService productService;
+    private final LoanDeposit loanDeposit;
 
     @Override
     @Transactional
     public LoanResponse create(LoanDto loanDto) throws BadRequestException {
+        BigDecimal principal = productService.getProductPrice(loanDto.getProducts());//sum product price
+        if (loanDto.getDeposit() != null && loanDto.getDeposit().compareTo(BigDecimal.ZERO) >= 0) {
+            if (loanDto.getDeposit().compareTo(principal) > 0) loanDto.setPrincipal(BigDecimal.ZERO);
+            else loanDto.setPrincipal(principal.subtract(loanDto.getDeposit()));
 
-        log.info(" loan restructure: {}",loanDto.getType());
-        LoanCalculateService loanProcess = loanFactory.getPaymentService(loanDto.getType());
-        log.info(" loanProcess......");
-        Loan loan = loanMapper.toLoan(loanDto, customerRepository,productRepository);
-        log.info("loan: {}",loan.getCustomer().getId());
-        List<LoanSchedulerResponse> loanSchedulerResponse = loanProcess.loanCalculator(loanDto.getPrincipal(), loanDto.getRate(), loanDto.getStartDate(), loanDto.getEndDate());
-
-        Set<LoanDetails> setLoanDetails = new HashSet<>();
-        BigDecimal totalInterestAndPrincipal = BigDecimal.ZERO;
-
-        if (!loanSchedulerResponse.isEmpty()) {
-            log.info("loan scheduler: {}",loanSchedulerResponse.get(0).getPrincipalPayment());
-
-            for (LoanSchedulerResponse emi : loanSchedulerResponse) {
-                LoanDetails loanDetails = extractLoanDetails(emi, loan);
-                totalInterestAndPrincipal = totalInterestAndPrincipal.add(emi.getPrincipalPayment()).setScale(2, RoundingMode.HALF_UP);
-                setLoanDetails.add(loanDetails);
+            if (loanDto.getDeposit().compareTo(principal) == 0) {
+                Loan loan = loanMapper.toLoan(loanDto, customerRepository, productRepository);
+                return loanDeposit.payAll(loan);
+            } else {
+                return loanDeposit.pay(loanDto);
             }
-        }
-
-        try {
-            loan.setLoanStatus(LoanStatus.PROCESSING);
-            loan.setLoanDetails(new HashSet<>((setLoanDetails.stream().toList())));
-            loan.setTotalAmount(totalInterestAndPrincipal);
-            loan.setTotalInterest(totalInterestAndPrincipal.subtract(loan.getPrincipal()));
-            loan.setLoanKey(generateLoanKey());
-            log.info("loan mapper: {}",loan.getLoanKey());
-            Loan savedLoan = loanRepository.save(loan);
-            return loanMapper.toLoanResponse(savedLoan);
-
-        } catch (Exception e) {
-            log.warn("loan error: {}",e.getLocalizedMessage());
-            throw new BadRequestException(e.getMessage());
-        }
+        } else throw new BadRequestException("Deposit is Null");
 
     }
 
@@ -118,47 +91,28 @@ public class LoanServiceImpl implements LoanService {
         return loans.stream().map(this.loanMapper::toLoanResponse).toList();
     }
 
-
-    private LoanDetails extractLoanDetails(LoanSchedulerResponse emi, Loan loan) {
-        LoanDetails loanDetails = new LoanDetails();
-        loanDetails.setLoan(loan);
-        loanDetails.setStatus(LoanStatus.WAITING);
-        loanDetails.setPrincipal(emi.getPrincipalPayment());
-        loanDetails.setInterestPayment(emi.getInterestPayment());
-        loanDetails.setOutstandingBalance(emi.getOutstandingBalance());
-        loanDetails.setRepaymentDate(emi.getRepaymentDate());
-        loanDetails.setInterestCap(emi.getInterestCap());
-        return loanDetails;
-    }
-
-    private String generateLoanKey() {
-        GenerateNumber generateKey = generateKeyFactory.getKeyGenerate(GenerateKey.LoanKey);
-        return generateKey.generateKey();
-    }
-
-
     @Override
     @Transactional
     public LoanResponse restructure(LoanRestructureDto restructureDto) throws BadRequestException {
-        log.info(" loan id: {}",restructureDto.getLoanId());
-        log.info(" loan type: {}",restructureDto.getType());
-        BigDecimal outStandingBalance=loanDetailsService.getOutStandingBalanceCurrentLoan(restructureDto.getLoanId());
-        if (outStandingBalance==null) throw new BadRequestException("This Loan Out of Payment pls check it again...");
-        LoanDto loanDto=LoanDto.builder()
-                .alert(restructureDto.getAlert())
-                .customer_id(restructureDto.getCustomer_id())
+
+        BigDecimal outStandingBalance = loanDetailsService.getOutStandingBalanceCurrentLoan(restructureDto.getLoanId());
+        log.info(" outstanding balance: {}",outStandingBalance);
+        if (outStandingBalance == null) throw new BadRequestException("This Loan Out of Payment pls check it again...");
+        Loan existLoan=loanRepository.findById(restructureDto.getLoanId()).orElseThrow(()->new NotFoundException("Loan Not Found"));
+
+        LoanDto loanDto = (LoanDto) LoanDto.builder()
+                .principal(outStandingBalance)
+                .customer_id(existLoan.getCustomer().getId())
                 .rate(restructureDto.getRate())
                 .term(restructureDto.getTerm())
-                .product(restructureDto.getProduct())
+                .products(existLoan.getProducts().stream().map(Product::getId).toList())
                 .type(restructureDto.getType())
-                .penaltyRate(restructureDto.getPenaltyRate())
-                .principal(outStandingBalance)
+                .deposit(BigDecimal.ZERO)
                 .startDate(restructureDto.getStartDate())
                 .endDate(restructureDto.getEndDate())
                 .build();
 
-            return this.create(loanDto);
+        return this.loanDeposit.pay(loanDto);
     }
-
 
 }

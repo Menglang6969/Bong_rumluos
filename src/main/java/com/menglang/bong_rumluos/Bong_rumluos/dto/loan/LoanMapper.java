@@ -20,10 +20,7 @@ import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Mapper(componentModel = "spring", uses = {LoanDetailMapper.class, CustomerMapper.class})
 public interface LoanMapper {
@@ -31,7 +28,7 @@ public interface LoanMapper {
     Logger log = LoggerFactory.getLogger(LoanMapper.class);
 
     @Mapping(target = "customer", source = "customer_id", qualifiedByName = "mapCustomer")
-    @Mapping(target = "product", source = "product", qualifiedByName = "mapProduct")
+    @Mapping(target = "products", source = "products", qualifiedByName = "mapProduct")
     @Mapping(target = "loanDetails", ignore = true)
     @Mapping(target = "totalAmount", ignore = true)
     @Mapping(target = "totalInterest", ignore = true)
@@ -47,10 +44,13 @@ public interface LoanMapper {
     }
 
     @Named("mapProduct")
-    default Product mapProduct(Long cid, @Context CustomerRepository customerRepository, @Context ProductRepository productRepository) {
-        log.info(" product {}",cid);
-        return productRepository.findById(cid).orElseThrow(() -> new NotFoundException("Product Not Found"));
-
+    default Set<Product> mapProduct(List<Long> products, @Context CustomerRepository customerRepository, @Context ProductRepository productRepository) {
+        Set<Product> setProducts=new HashSet<>();
+        for (Long pid:products){
+            Product product= productRepository.findById(pid).orElseThrow(() -> new NotFoundException("Product Not Found "+pid));
+            setProducts.add(product);
+        }
+        return setProducts;
     }
 
     @Mapping(target = "loanDetails", source = "loanDetails", qualifiedByName = "mapLoanDetails")

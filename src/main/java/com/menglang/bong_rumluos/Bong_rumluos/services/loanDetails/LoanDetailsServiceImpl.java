@@ -63,10 +63,11 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
     @Transactional
     public BigDecimal getOutStandingBalanceCurrentLoan(Long id) {
         List<LoanDetails> loanDetailsList=loanDetailsRepository.findAllByLoanId(id);
+        log.info("total loan details: {}",loanDetailsList.size());
         LoanDetails loanDetailsMax =loanDetailsList.stream().max(Comparator.comparing(LoanDetails::getOutstandingBalance)).orElseThrow(NoSuchElementException::new);
         if (loanDetailsMax!=null){
             closeLoanAndLoanDetail(id,loanDetailsList);
-            return loanDetailsMax.getOutstandingBalance();
+            return loanDetailsMax.getOutstandingBalance().add(loanDetailsMax.getPrincipal()); //new Principal = outstanding+currentPrincipal
         }
         return null;
     }

@@ -5,6 +5,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Product;
+import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.BaseException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CategoryRepository;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -31,15 +33,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse create(ProductRequest productRequest) throws BadRequestException {
         try {
-           Category category= categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new NotFoundException("Category Not Found."));
+            Category category = categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new NotFoundException("Category Not Found."));
             Product product = productMapper.toEntity(productRequest);
-            Product savedProduct=productRepository.save(product);
+            Product savedProduct = productRepository.save(product);
             savedProduct.setCategory(category);
             return productMapper.toProductResponse(savedProduct);
         } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
     }
+
     @Override
     public ProductResponse getById(Long id) throws BadRequestException {
         Product product = findProductById(id);
@@ -50,10 +53,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse update(Long id, ProductRequest productRequest) throws BadRequestException {
         try {
             Product existProduct = findProductById(id);
-            Category category= categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new NotFoundException("Category Not Found."));
+            Category category = categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new NotFoundException("Category Not Found."));
             productMapper.updateProductFromDTO(productRequest, existProduct);
-            log.info("exist product update name :{}",existProduct.getName());
-            Product productUpdated=productRepository.save(existProduct);
+            log.info("exist product update name :{}", existProduct.getName());
+            Product productUpdated = productRepository.save(existProduct);
             productUpdated.setCategory(category);
             return productMapper.toProductResponse(productUpdated);
 
@@ -75,11 +78,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getAll(int page, int limit, String orderBy, String sortBy, boolean isTrash, String query,Long category_id) throws BadRequestException {
+    public List<ProductResponse> getAll(int page, int limit, String orderBy, String sortBy, boolean isTrash, String query, Long category_id) throws BadRequestException {
         Sort soring = orderBy.equals("ASC") ? Sort.by(Sort.Direction.ASC, sortBy) : Sort.by(Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page - 1, limit, soring);
-        Page<Product> allProducts = productRepository.findAllByNameOrCodeAndDeletedIsNotNull(query,category_id, pageable);
+        Page<Product> allProducts = productRepository.findAllByNameOrCodeAndDeletedIsNotNull(query, category_id, pageable);
         return allProducts.getContent().stream().map(this.productMapper::toProductResponse).toList();
+    }
+
+    @Override
+    public BigDecimal getProductPrice(List<Long> product_ids) throws BaseException {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (Long pid : product_ids) {
+            Product product = this.findProductById(pid);
+            totalPrice = totalPrice.add(product.getSellPrice());
+        }
+        return totalPrice;
     }
 
     private Product findProductById(Long id) {

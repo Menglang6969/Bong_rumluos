@@ -23,15 +23,11 @@ public class ScheduleLoan implements LoanCalculateService {
                                                       LocalDate startDate, LocalDate endDate) {
 
         List<LoanSchedulerResponse> schedule = new ArrayList<>();
-        log.info(" principal :{}",principalAmount);
-        log.info(" rate :{}",annualRate);
-        log.info(" start date :{}",startDate);
-        log.info(" end date :{}",endDate);
 
         // Calculate total months
         int totalMonths = (int) ChronoUnit.MONTHS.between(startDate, endDate) + 1;
         BigDecimal periods= BigDecimal.valueOf((double) totalMonths /12);
-        BigDecimal principal = principalAmount.divide(BigDecimal.valueOf(totalMonths), 10, RoundingMode.HALF_UP);
+        BigDecimal principal = principalAmount.divide(BigDecimal.valueOf(totalMonths), 3, RoundingMode.HALF_UP);
 
         BigDecimal totalInterest = principalAmount.multiply(BigDecimal.valueOf(annualRate / 100)).multiply(periods);
 
@@ -49,11 +45,11 @@ public class ScheduleLoan implements LoanCalculateService {
             }
 
             LoanSchedulerResponse schedulerPay = new LoanSchedulerResponse();
-            schedulerPay.setInterestCap(principal);
-            schedulerPay.setInterestPayment(interestCap);
-            schedulerPay.setOutstandingBalance(outstandingBalance);
+            schedulerPay.setInterestCap(principal.setScale(2,RoundingMode.HALF_UP));
+            schedulerPay.setInterestPayment(interestCap.setScale(2,RoundingMode.HALF_UP));
+            schedulerPay.setOutstandingBalance(outstandingBalance.setScale(2,RoundingMode.HALF_UP));
             schedulerPay.setRepaymentDate(CheckWeekend.validateWeekend(startDate.plusMonths(month)));
-            schedulerPay.setPrincipalPayment(monthlyPrincipal);
+            schedulerPay.setPrincipalPayment(monthlyPrincipal.setScale(2,RoundingMode.HALF_UP));
             schedule.add(schedulerPay);
         }
 

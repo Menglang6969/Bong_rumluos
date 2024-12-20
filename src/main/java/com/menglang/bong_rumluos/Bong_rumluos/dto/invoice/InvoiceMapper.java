@@ -44,6 +44,12 @@ public interface InvoiceMapper {
 //    @Mapping(target = "loanDetails",ignore = true)
     RepaymentResponseDTO toRepaymentResponseDTO(LoanRepayment loanRepayment);
 
+
+    @Mapping(target = "loanRepayments",ignore = true)
+    @Mapping(target = "customer",source = "customer",qualifiedByName = "mapToCustomer")
+    @Mapping(target = "totalPayment",source = "totalAmount")
+    Invoice toInvoiceHalf(InvoiceHalfPayRequestDTO requestDTO,@Context CustomerRepository customerRepository, @Context LoanDetailsRepository loanDetailsRepository, @Context InvoiceRepository invoiceRepository);
+
     @Named("mapLoanRepayments")
     default LoanRepayment mapLoanRepayments(
             RepaymentRequestDTO repaymentRequestDTO,
