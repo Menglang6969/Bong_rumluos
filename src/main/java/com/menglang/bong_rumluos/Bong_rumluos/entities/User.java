@@ -28,4 +28,5 @@ public class User extends BaseEntity<Long> {
     private Set<Role> roles = new HashSet<>();
 
 
+
 }

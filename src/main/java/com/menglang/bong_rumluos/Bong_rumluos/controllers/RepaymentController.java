@@ -19,9 +19,9 @@ public class RepaymentController {
     private static final Logger log = LoggerFactory.getLogger(RepaymentController.class);
     private final LoanRepaymentService loanRepaymentService;
 
-    @PostMapping
-    public ResponseEntity<RepaymentResponseDTO> makeRepayment(@RequestBody RepaymentRequestDTO dto) {
-        log.info("invoke repayment ...");
-        return ResponseEntity.ok(loanRepaymentService.makeRepayment(dto));
-    }
+//    @PostMapping
+//    public ResponseEntity<RepaymentResponseDTO> makeRepayment(@RequestBody RepaymentRequestDTO dto) {
+//        log.info("invoke repayment ...");
+//        return ResponseEntity.ok(loanRepaymentService.makeRepayment(dto));
+//    }
 }

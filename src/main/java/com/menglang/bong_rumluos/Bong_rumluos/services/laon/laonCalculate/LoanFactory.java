@@ -22,8 +22,6 @@ public class LoanFactory {
     }
 
     public LoanCalculateService getPaymentService(LoanType type) {
-        log.info("Loan type: {} toString {}",type,type.toString());
-        log.info("Loan Services: {}",mapLoanServices.get(type.toString()));
         try{
             LoanCalculateService service = mapLoanServices.get(type.toString());
             if (service == null) {
@@ -31,6 +29,7 @@ public class LoanFactory {
             }
             return service;
         }catch (Exception e){
+            log.warn("Loan Factory Error: {}",e.getLocalizedMessage());
             throw new BadRequestException(e.getMessage());
         }
 

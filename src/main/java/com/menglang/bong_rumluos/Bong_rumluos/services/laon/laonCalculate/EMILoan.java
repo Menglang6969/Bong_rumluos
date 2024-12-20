@@ -24,7 +24,7 @@ public class EMILoan implements LoanCalculateService {
         int tenureMonths = (int) ChronoUnit.MONTHS.between(startDate, endDate)+1;
         log.info(" total months payments: {}",tenureMonths);
         List<LoanSchedulerResponse> emiSchedule = new ArrayList<>();
-        BigDecimal monthlyRate = BigDecimal.valueOf(rate).divide(BigDecimal.valueOf(12 * 100), 10, RoundingMode.HALF_UP);
+        BigDecimal monthlyRate = BigDecimal.valueOf(rate).divide(BigDecimal.valueOf(12 * 100), 3, RoundingMode.HALF_UP);
 
         BigDecimal emi;
         if (monthlyRate.compareTo(BigDecimal.ZERO) == 0) {
@@ -50,13 +50,13 @@ public class EMILoan implements LoanCalculateService {
                 // Calculate interest and principal components for the current month
                 BigDecimal interest = remainingPrincipal.multiply(monthlyRate).setScale(2, RoundingMode.HALF_UP);
                 BigDecimal principalPayment = emi.subtract(interest);
-
+                BigDecimal outStandBal=BigDecimalUtils.convertToZeroIfNegative(remainingPrincipal.subtract(principalPayment).setScale(2, RoundingMode.HALF_UP));
                 // Create and populate the LoanSchedulerResponse object
                 LoanSchedulerResponse emiScheduler = new LoanSchedulerResponse();
                 emiScheduler.setRepaymentDate(CheckWeekend.validateWeekend(startDate.plusMonths(month)));
                 emiScheduler.setPrincipalPayment(emi.setScale(2, RoundingMode.HALF_UP)); // Principal Payment
-                emiScheduler.setInterestPayment(interest); // Interest Payment
-                emiScheduler.setOutstandingBalance(BigDecimalUtils.convertToZeroIfNegative(remainingPrincipal.subtract(principalPayment).setScale(2, RoundingMode.HALF_UP))); // Remaining Balance
+                emiScheduler.setInterestPayment(interest.setScale(2,RoundingMode.HALF_UP)); // Interest Payment
+                emiScheduler.setOutstandingBalance(outStandBal.setScale(2,RoundingMode.HALF_UP)); // Remaining Balance
                 emiScheduler.setInterestCap(principalPayment.setScale(2, RoundingMode.HALF_UP) ); // EMI amount
 
                 emiSchedule.add(emiScheduler);
