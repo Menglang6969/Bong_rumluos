@@ -9,4 +9,5 @@ public class BongRumluosApplication {
         SpringApplication.run(BongRumluosApplication.class, args);
     }
 
+
 }

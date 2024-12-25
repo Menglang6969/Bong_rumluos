@@ -57,6 +57,7 @@ public interface LoanMapper {
     @Mapping(target = "customer", source = "customer", qualifiedByName = "mapToCustomerResponse")
     LoanResponse toLoanResponse(Loan loan);
 
+    @Mapping(target = "isPaymentComing",source = "repaymentDate",qualifiedByName = "checkIsComingDate")
     LoanDetailsResponse toLoanDetails(LoanDetails loanDetail);
 
     CustomerBaseResponse toCustomer(Customer customer);

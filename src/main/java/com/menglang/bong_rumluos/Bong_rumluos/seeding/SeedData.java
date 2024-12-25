@@ -60,8 +60,8 @@ public class SeedData {
 
     private void seedLoans() {
         log.info("invoke seeding loans....");
-        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 6, 1), (short) 3, 1L,List.of(1L), LoanType.EMILoan,  BigDecimal.ZERO,"");
-        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 1), (short) 3, 1L,List.of(1L),  LoanType.EMILoan,  BigDecimal.ZERO,"");
+        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2024, 12, 25), LocalDate.of(2025, 6, 25), (short) 3, 1L,List.of(1L), LoanType.EMILoan,  BigDecimal.ZERO,"");
+        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2024, 11, 25), LocalDate.of(2025, 12, 25), (short) 3, 1L,List.of(1L),  LoanType.EMILoan,  BigDecimal.ZERO,"");
 
         List<LoanDto> loanDtoList = List.of(loanDto1, loanDto2);
         try {
