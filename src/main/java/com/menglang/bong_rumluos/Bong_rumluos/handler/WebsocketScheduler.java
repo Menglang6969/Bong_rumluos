@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,9 +26,9 @@ public class WebsocketScheduler {
 //    @Scheduled(fixedRate = 10000)
     @Scheduled(cron = "0 0 6 * * ?") //calling every day on 6AM
     void sendPeriodicMessages() throws IOException {
-        log.debug("invoke scheduler...................................");
         String message = "Scheduled message: " + LocalDateTime.now();
-        processComingPayment.execute();
+        log.debug("invoke scheduler : {}...................................", LocalDateTime.now());
+//        processComingPayment.execute();
 
     }
 }

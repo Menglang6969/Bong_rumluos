@@ -42,30 +42,30 @@ public class ProcessComingPayment {
 
     public void execute() {
         log.info("Invoke execute data...");
-        Sort.Direction direction= Sort.Direction.DESC;
-        Pageable pageable= PageRequest.of(0,50,direction);
+        Sort sort= Sort.by(Sort.Direction.DESC,"repaymentDate");
+        Pageable pageable= PageRequest.of(0,50,sort);
         List<LoanDetailsResponse> batch = new ArrayList<>();
         Stream<LoanDetailsResponse> dataStream = loanDetailsRepository.getLoanDetailsUpComingPayment(pageable).stream().map(loanDetailMapper::toLoanResponse);
 
-        try {
-            Iterator<LoanDetailsResponse> iterator = dataStream.iterator();
-            log.info(" iterator: {}", iterator.next().getId());
-            while (iterator.hasNext()) {
-                if (filterComingDateRePayment(iterator.next().getRepaymentDate()))
-                    batch.add(iterator.next());
-
-                // If the batch reaches the batch size or we've processed all data
-                if (batch.size() == BATCH_SIZE || !iterator.hasNext()) {
-                    sendBatchAndWaitForAcknowledgment(batch);
-                    batch.clear(); // Reset batch after sending
-                }
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Task interrupted: " + e.getMessage());
-        } catch (Exception e) {
-            log.error("Error occurred while processing loan details: " + e.getMessage());
-        }
+//        try {
+//            Iterator<LoanDetailsResponse> iterator = dataStream.iterator();
+//            log.info(" iterator: {}", iterator.next().getId());
+//            while (iterator.hasNext()) {
+//                if (filterComingDateRePayment(iterator.next().getRepaymentDate()))
+//                    batch.add(iterator.next());
+//
+//                // If the batch reaches the batch size or we've processed all data
+//                if (batch.size() == BATCH_SIZE || !iterator.hasNext()) {
+//                    sendBatchAndWaitForAcknowledgment(batch);
+//                    batch.clear(); // Reset batch after sending
+//                }
+//            }
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            log.error("Task interrupted: " + e.getMessage());
+//        } catch (Exception e) {
+//            log.error("Error occurred while processing loan details: " + e.getMessage());
+//        }
     }
 
     private void sendBatchAndWaitForAcknowledgment(List<LoanDetailsResponse> batch) throws InterruptedException {
