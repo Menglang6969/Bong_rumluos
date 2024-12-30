@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 @JsonPropertyOrder({"id", "name", "description", "color", "parent", "createdAt", "createdBy", "updatedAt", "updatedBy"})
 public class CategoryResponse extends BaseAuditDTO {
-    @JsonProperty(index = 1)
-    private Long id;
+//    @JsonProperty(index = 1)
+//    private Long id;
     @JsonProperty(index = 2)
     private String name;
     @JsonProperty(index = 3)

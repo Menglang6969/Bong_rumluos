@@ -63,12 +63,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerResponse> getCustomers(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
+    public Page<Customer> getCustomers(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
         Sort sort = orderBy.equals("ASC") ? Sort.by(Sort.Direction.ASC, sortBy) : Sort.by(Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page-1, limit, sort);
-        Page<Customer> customers = customerRepository.findAllByNameOrPhone(query,pageable);
-        log.info("customer name: {}",customers.getContent().get(0).getName());
-        return customers.getContent().stream().map(this.customerMapper::toCustomer).toList();
+        return customerRepository.findAllByNameOrPhone(query,pageable);
+
     }
 
     private Customer findCustomerById(Long id) {
