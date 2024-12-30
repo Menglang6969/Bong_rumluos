@@ -66,13 +66,13 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanResponse> findAll(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
+    public Page<Loan> findAll(int page, int limit, String orderBy, String sortBy, String query) throws BadRequestException {
         Sort.Direction order = orderBy.equals("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(order, orderBy);
         Pageable pageable = PageRequest.of(page - 1, limit, sort);
 
-        Page<Loan> loansPage = loanRepository.findByLoanKeyOrCustomerNameOrPhone(query, pageable);
-        return loansPage.getContent().stream().map(this.loanMapper::toLoanResponse).toList();
+        return loanRepository.findByLoanKeyOrCustomerNameOrPhone(query, pageable);
+
     }
 
     @Override

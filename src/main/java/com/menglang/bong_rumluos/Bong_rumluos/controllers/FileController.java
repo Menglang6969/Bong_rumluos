@@ -4,12 +4,15 @@ import com.menglang.bong_rumluos.Bong_rumluos.constant.AppProperties;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.file.FileMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.file.FileRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.file.FileResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.BaseResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.File;
 import com.menglang.bong_rumluos.Bong_rumluos.services.file.FileService;
 import com.menglang.bong_rumluos.Bong_rumluos.services.storage.StorageService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +32,15 @@ public class FileController {
     private final AppProperties appProperties;
 
     @PostMapping(value = "upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<FileResponse> upload(@RequestPart MultipartFile file){
+    public ResponseEntity<FileResponse> upload(@RequestPart MultipartFile file) {
         log.info("invoke file upload.....");
-        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.upload(file),appProperties));
+        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.upload(file), appProperties));
     }
 
     @PostMapping(value = "uploads", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<List<FileResponse>> uploads(@RequestPart List<MultipartFile> files){
+    public ResponseEntity<List<FileResponse>> uploads(@RequestPart List<MultipartFile> files) {
         log.info("invoke file batch upload.....");
-        return ResponseEntity.ok(fileMapper.toListFileResponse(fileService.batchUpload(files),appProperties));
+        return ResponseEntity.ok(fileMapper.toListFileResponse(fileService.batchUpload(files), appProperties));
     }
 
     @GetMapping("/load/{filename}")
@@ -46,33 +49,36 @@ public class FileController {
     }
 
     @GetMapping("/find-all")
-    public ResponseEntity<List<FileResponse>> findAll(
-            @RequestParam(name = "page",defaultValue = "1") int page,
-            @RequestParam(name = "page-size",defaultValue = "10") int size,
-            @RequestParam(name="is-trash",defaultValue = "false") boolean isTrash,
-            @RequestParam(name = "query",defaultValue = "") String query
-    ){
-        return ResponseEntity.ok(fileMapper.toListFileResponse(fileService.findAll(page,size,isTrash,query).stream().toList(),appProperties));
+    public ResponseEntity<BaseResponse> findAll(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "page-size", defaultValue = "10") int size,
+            @RequestParam(name = "is-trash", defaultValue = "false") boolean isTrash,
+            @RequestParam(name = "query", defaultValue = "") String query
+    ) {
+//       Page<File> filePage= fileMapper.toListFileResponse(fileService.findAll(page,size,isTrash,query).stream().toList(),appProperties));
+        Page<File> filePage = fileService.findAll(page, size, isTrash, query);
+        List<FileResponse> fileResponses=fileMapper.toListFileResponse(filePage.getContent().stream().toList(),appProperties);
+        return BaseResponse.success(fileResponses,filePage,"successful");
     }
 
     @PatchMapping("/update-file-name/{id}")
-    public ResponseEntity<FileResponse> updateFileName(@PathVariable("id") Long id, @RequestBody FileRequest fileRequest){
-        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.updateFileName(id,fileRequest),appProperties));
+    public ResponseEntity<FileResponse> updateFileName(@PathVariable("id") Long id, @RequestBody FileRequest fileRequest) {
+        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.updateFileName(id, fileRequest), appProperties));
     }
 
     @PatchMapping("/delete/{id}")
-    public ResponseEntity<FileResponse> deleteFile(@PathVariable("id") Long id){
-        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.delete(id),appProperties));
+    public ResponseEntity<FileResponse> deleteFile(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.delete(id), appProperties));
     }
 
     @PatchMapping("/restore/{id}")
-    public ResponseEntity<FileResponse> restoreFile(@PathVariable("id") Long id){
-        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.restore(id),appProperties));
+    public ResponseEntity<FileResponse> restoreFile(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.restore(id), appProperties));
     }
 
     @DeleteMapping("/delete-from-trash/{id}")
-    public ResponseEntity<FileResponse> deleteFromTrash(@PathVariable("id") Long id){
-        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.deleteFromTrash(id),appProperties));
+    public ResponseEntity<FileResponse> deleteFromTrash(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(fileMapper.toFileResponse(fileService.deleteFromTrash(id), appProperties));
     }
 
 

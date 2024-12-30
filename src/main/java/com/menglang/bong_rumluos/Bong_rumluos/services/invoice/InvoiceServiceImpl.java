@@ -14,10 +14,13 @@ import com.menglang.bong_rumluos.Bong_rumluos.repositories.LoanRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.services.invoice.invoiceHelper.InvoiceCalculate;
 import com.menglang.bong_rumluos.Bong_rumluos.services.invoice.invoiceHelper.InvoiceValidateData;
 import com.menglang.bong_rumluos.Bong_rumluos.services.loanDetails.LoanDetailsServiceImpl;
+import com.menglang.bong_rumluos.Bong_rumluos.utils.PageableResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.utils.SequenceKeyGenerator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -87,6 +90,12 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new BadRequestException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public Page<Invoice> getAllInvoices(int page, int size, String orderBy, String sortBy, String query) {
+        Pageable pageable= PageableResponse.handlePageable(page,size,orderBy,sortBy);
+        return invoiceRepository.getAllInvoiceByInvoiceNoOrCustomerName(query,pageable);
     }
 
     private void updateLoanStatus(List<RepaymentRequestDTO> loanDetails) {

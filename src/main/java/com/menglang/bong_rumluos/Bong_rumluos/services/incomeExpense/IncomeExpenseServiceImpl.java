@@ -9,6 +9,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFou
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.IncomeExpenseCategoryRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.IncomeExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -63,10 +64,10 @@ public class IncomeExpenseServiceImpl implements IncomeExpenseService {
     }
 
     @Override
-    public List<IncomeExpenseResDto> getAll(int page, int limit, String shortBy, String orderBy, String query) {
+    public Page<IncomeExpense> getAll(int page, int limit, String shortBy, String orderBy, String query) {
         Sort sort = Sort.by(orderBy.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, shortBy);
         Pageable pageable = PageRequest.of(page - 1, limit, sort);
-        return repository.findAllDescription(query, pageable).stream().map(mapper::toResponse).toList();
+        return repository.findAllDescription(query, pageable);
     }
 
     private IncomeExpense findById(Long id) {

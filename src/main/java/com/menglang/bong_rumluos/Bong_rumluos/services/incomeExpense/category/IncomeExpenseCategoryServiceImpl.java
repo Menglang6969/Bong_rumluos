@@ -8,12 +8,11 @@ import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadReq
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.IncomeExpenseCategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class IncomeExpenseCategoryServiceImpl implements IncomeExpenseCategorySe
         try {
             mapper.reqUpdate(dto, updateData);
             return mapper.toResponse(repository.save(updateData));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
 
@@ -51,25 +50,25 @@ public class IncomeExpenseCategoryServiceImpl implements IncomeExpenseCategorySe
 
     @Override
     public IncomeExpenseCategoryResDto delete(Long id) throws BadRequestException {
-        IncomeExpenseCategory incomeExpenseCategory=findById(id);
+        IncomeExpenseCategory incomeExpenseCategory = findById(id);
         try {
             repository.delete(incomeExpenseCategory);
             return mapper.toResponse(incomeExpenseCategory);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
     }
 
     @Override
-    public List<IncomeExpenseCategoryResDto> getAll(int page, int limit, String shortBy, String orderBy, String query) {
-        Sort sort=Sort.by(orderBy.equals("DESC")? Sort.Direction.DESC: Sort.Direction.ASC,shortBy);
-        Pageable pageable= PageRequest.of(page-1,limit,sort);
+    public Page<IncomeExpenseCategory> getAll(int page, int limit, String shortBy, String orderBy, String query) {
+        Sort sort = Sort.by(orderBy.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, shortBy);
+        Pageable pageable = PageRequest.of(page - 1, limit, sort);
 
-        List<IncomeExpenseCategoryResDto> incExpResData=repository.findAllByTitle(query,pageable).stream().map(mapper::toResponse).toList();
-        return incExpResData;
+        return repository.findAllByTitle(query, pageable);
+
     }
 
-    private IncomeExpenseCategory findById(Long id){
+    private IncomeExpenseCategory findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("Data Not Found."));
     }
 }
