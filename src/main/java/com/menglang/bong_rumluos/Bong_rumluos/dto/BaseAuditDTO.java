@@ -2,6 +2,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.BasePageResponse;
 import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BaseAuditDTO {
+public class BaseAuditDTO extends BasePageResponse {
     private Long id;
     private LocalDateTime createdAt;
     private String createdBy;

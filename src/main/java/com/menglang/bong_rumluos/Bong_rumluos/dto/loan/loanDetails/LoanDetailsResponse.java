@@ -22,4 +22,5 @@ public class LoanDetailsResponse {
     private BigDecimal outstandingBalance;
     private Boolean isPenalty;
     private LoanStatus status;
+    private Boolean isPaymentComing;
 }

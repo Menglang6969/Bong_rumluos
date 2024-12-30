@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.2/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Client</h1>
+<button onclick="handleAcknowledge()" id="get_more"> get more</button>
+<div id="data"></div>
+
+<script>
+    const socket = new SockJS('http://localhost:9090/ws');
+    const stompClient = Stomp.over(socket);
+
+
+    function handleAcknowledge(){
+        console.log("trigger acknowledge.....")
+        stompClient.send('/app/acknowledge', {}, JSON.stringify({ message: 'ACK' }));
+    }
+
+    stompClient.connect({}, () => {
+        console.log('Connected to WebSocket server');
+
+        // Subscribe to data topic
+        stompClient.subscribe('/topic/message', (message) => {
+            const data = JSON.parse(message.body);
+            console.log('Received batch:', data);
+
+            // Display data
+            const dataDiv = document.getElementById('data');
+            data.forEach(item => {
+                const p = document.createElement('p');
+                p.textContent = item;
+                dataDiv.appendChild(p);
+            });
+
+            // Send acknowledgment after processing the batch
+
+        });
+    });
+</script>
+</body>
+</html>

@@ -28,7 +28,10 @@ spring:
         show: true
         format_sql: true
 #        use_sql_comments: true
-
+        jdbc:
+          fetch_size: 5
+          batch_size: 50
+          passDistinctThrough: false
     hibernate:
       ddl-auto: create-drop
 
@@ -41,7 +44,13 @@ spring:
         web-allow-others: false
 server:
   port: 9090
-
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          socket: DEBUG
+        messaging: DEBUG
 #logging:
 #  level:
 #    org:

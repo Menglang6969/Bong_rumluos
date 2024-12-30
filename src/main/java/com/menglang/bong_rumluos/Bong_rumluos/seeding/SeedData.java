@@ -4,12 +4,17 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.customer.CustomerMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.customer.CustomerRequest;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.incomeExpense.IncomeExpenseMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.incomeExpense.IncomeExpenseReqDto;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.incomeExpense.category.IncomeExpenseCategoryMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.incomeExpense.category.IncomeExpenseCategoryReqDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.*;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.IncomeExpenseType;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanType;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.Terms;
@@ -48,6 +53,9 @@ public class SeedData {
     private final LoanMapper loanMapper;
     private final LoanFactory loanFactory;
     private final SequenceKeyGenerator sequenceKeyGenerator;
+    private final IncomeExpenseCategoryMapper incomeExpenseCategoryMapper;
+    private final IncomeExpenseMapper incomeExpenseMapper;
+    private final IncomeExpenseCategoryRepository incomeExpenseCategoryRepository;
 
     @PostConstruct
     private void seedData() {
@@ -56,12 +64,29 @@ public class SeedData {
         seedCustomer();
         seedSequenceNumber();
         seedLoans();
+//        seedIncomeExpense();
+    }
+
+    private void seedIncomeExpense(){
+        log.info("invoke seeding income expense.....");
+        IncomeExpenseCategoryReqDto reqDto1=new IncomeExpenseCategoryReqDto("Electricity","Pay for EDC");
+        IncomeExpenseCategoryReqDto reqDto2=new IncomeExpenseCategoryReqDto("NSSF","Pay for NSSF");
+        IncomeExpenseCategoryReqDto reqDto3=new IncomeExpenseCategoryReqDto("Salary","Pay for Employee Salary");
+
+        IncomeExpenseReqDto d1=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,1L,new BigDecimal(100),"Pay for 1/12/2024");
+        IncomeExpenseReqDto d2=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,2L,new BigDecimal(150),"Pay for 1/12/2024");
+        IncomeExpenseReqDto d3=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,3L,new BigDecimal(250),"Pay for 1/12/2024");
+
+        List<IncomeExpenseCategory> allDto= Stream.of(reqDto1,reqDto2,reqDto3).map(incomeExpenseCategoryMapper::toRequest).toList();
+        List<IncomeExpense> ds= Stream.of(d1,d2,d3).map(p->incomeExpenseMapper.toRequest(p,incomeExpenseCategoryRepository)).toList();
+
+
     }
 
     private void seedLoans() {
         log.info("invoke seeding loans....");
-        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 6, 1), (short) 3, 1L,List.of(1L), LoanType.EMILoan,  BigDecimal.ZERO,"");
-        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 1), (short) 3, 1L,List.of(1L),  LoanType.EMILoan,  BigDecimal.ZERO,"");
+        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2024, 12, 25), LocalDate.of(2025, 6, 25), (short) 3, 1L,List.of(1L), LoanType.EMILoan,  BigDecimal.ZERO,"");
+        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2024, 11, 25), LocalDate.of(2025, 12, 25), (short) 3, 1L,List.of(1L),  LoanType.EMILoan,  BigDecimal.ZERO,"");
 
         List<LoanDto> loanDtoList = List.of(loanDto1, loanDto2);
         try {

@@ -3,11 +3,14 @@ package com.menglang.bong_rumluos.Bong_rumluos.controllers;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.BaseResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
 import com.menglang.bong_rumluos.Bong_rumluos.services.category.CategoryService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +55,19 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAll() {
-        return ResponseEntity.ok(categoryService.getAll().stream().map(this.categoryMapper::toResponse).toList());
+    public ResponseEntity<BaseResponse> getAll(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "orderBy", defaultValue = "name") String orderBy,
+            @RequestParam(name = "sortBy", defaultValue = "desc") String sortBy,
+            @RequestParam(name = "query") String query
+
+    ) {
+        Page<Category> categoryPage = categoryService.getAll(
+                page, size, orderBy, sortBy, query
+        );
+//        log.info(" data response: id {}",categoryPage.getContent().get(0).getId());
+        List<CategoryResponse> categoryResponses = categoryPage.getContent().stream().map(categoryMapper::toResponse).toList();
+        return BaseResponse.success(categoryResponses, categoryPage, "successful");
     }
 }

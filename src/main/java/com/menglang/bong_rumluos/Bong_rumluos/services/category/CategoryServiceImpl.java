@@ -2,13 +2,19 @@ package com.menglang.bong_rumluos.Bong_rumluos.services.category;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.ConflictException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CategoryRepository;
+import com.menglang.bong_rumluos.Bong_rumluos.utils.PageableResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,8 +73,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
+    public Page<Category> getAll(
+            int page,int size,String orderBy,String sortBy,String query
+    ) {
+        Pageable pageable= PageableResponse.handlePageable(page,size,orderBy,sortBy);
+        return categoryRepository.findAllByName(query,pageable);
     }
 
     private Category validateParent(CategoryDTO request) {

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.SQLDataException;
 import java.util.List;
 
 @Service
@@ -78,11 +79,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getAll(int page, int limit, String orderBy, String sortBy, boolean isTrash, String query, Long category_id) throws BadRequestException {
+    public Page<Product> getAll(int page, int limit, String orderBy, String sortBy, boolean isTrash, String query, Long category_id) throws BadRequestException {
         Sort soring = orderBy.equals("ASC") ? Sort.by(Sort.Direction.ASC, sortBy) : Sort.by(Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page - 1, limit, soring);
-        Page<Product> allProducts = productRepository.findAllByNameOrCodeAndDeletedIsNotNull(query, category_id, pageable);
-        return allProducts.getContent().stream().map(this.productMapper::toProductResponse).toList();
+        try{
+           return productRepository.findAllByNameOrCodeAndDeletedIsNotNull(query, category_id, pageable);
+
+        }catch (RuntimeException e){
+                throw new BadRequestException(e.getMessage());
+        }
+
     }
 
     @Override
