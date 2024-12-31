@@ -4,6 +4,9 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+//@Param T is Data Response
+//@Param R is Data Request
+//@Param E is Entity
 public interface BaseService<T,R,E> {
     T create(R dto);
     T view(Long id);
