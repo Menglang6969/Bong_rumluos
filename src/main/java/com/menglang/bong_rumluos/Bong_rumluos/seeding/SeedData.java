@@ -11,6 +11,8 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.incomeExpense.category.IncomeE
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanDto;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.loan.LoanSchedulerResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.*;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +59,8 @@ public class SeedData {
     private final IncomeExpenseCategoryMapper incomeExpenseCategoryMapper;
     private final IncomeExpenseMapper incomeExpenseMapper;
     private final IncomeExpenseCategoryRepository incomeExpenseCategoryRepository;
+    private final PermissionRepository permissionRepository;
+    private final PermissionMapper permissionMapper;
 
     @PostConstruct
     private void seedData() {
@@ -64,8 +69,38 @@ public class SeedData {
         seedCustomer();
         seedSequenceNumber();
         seedLoans();
+        seedPermission();
 //        seedIncomeExpense();
+
     }
+    private void seedPermission(){
+        List<String> crudData=List.of("VIEW","CREATE","UPDATE","DELETE");
+        List<String> entities=List.of("PRODUCT","CATEGORY","REPORT","FILE","ROLE");
+        List<Permission> permissionRequestsList=new ArrayList<>();
+
+
+        for (String crud:crudData){
+            for (String entity:entities){
+                String permission=crud+"_"+entity;
+                String description=crud+" "+entity;
+
+                PermissionRequest permissionRequest=PermissionRequest.builder()
+                        .name(permission)
+                        .description(description)
+                        .build();
+                Permission permissionData=permissionMapper.toPermission(permissionRequest);
+                permissionRequestsList.add(permissionData);
+            }
+        }
+
+        try{
+            permissionRepository.saveAll(permissionRequestsList);
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+
+    }
+
 
     private void seedIncomeExpense(){
         log.info("invoke seeding income expense.....");

@@ -23,9 +23,9 @@ public class Role extends BaseAuditEntity<Long> {
     @Column(length = 150)
     private String description;
 
-    @Builder.Default
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER, mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+//    @Builder.Default
+//    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER, mappedBy = "roles")
+//    private Set<User> users = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "role_permissions",

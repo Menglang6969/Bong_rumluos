@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 
 public class PageableResponse {
     public static Pageable handlePageable(int page, int size, String orderBy, String sortBy) {
-        Sort sort = Sort.by(sortBy.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, orderBy);
+        Sort sort = Sort.by(sortBy.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, orderBy);
         return PageRequest.of(page - 1, size, sort);
 
     }
