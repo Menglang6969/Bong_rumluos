@@ -4,3 +4,9 @@ file:
     api-url: 'https://lang.com/'
     rest-uri: '/file'
     table-name: 'files'
+jwt:
+  url: '/authorization'
+  header: 'Authorization'
+  prefix: 'Bearer '
+  expire: 36000
+  secrete: '9dec8bb9a4fe5f496da28885e70eb9ba2c97aae0aedb535276bb41c9975d9409'

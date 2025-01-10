@@ -1,14 +1,25 @@
 package com.menglang.bong_rumluos.Bong_rumluos.entities;
 
+import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseAuditEntity;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity<Long> {
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class User extends BaseAuditEntity<Long> {
 
     @Column(length = 50, unique = true)
     private String username;
@@ -25,8 +36,8 @@ public class User extends BaseEntity<Long> {
             joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id")
     )
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
-
 
 
 }

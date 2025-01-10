@@ -15,6 +15,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.role.RoleMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.*;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.IncomeExpenseType;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
@@ -61,6 +62,8 @@ public class SeedData {
     private final IncomeExpenseCategoryRepository incomeExpenseCategoryRepository;
     private final PermissionRepository permissionRepository;
     private final PermissionMapper permissionMapper;
+    private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
 
     @PostConstruct
     private void seedData() {
@@ -70,9 +73,21 @@ public class SeedData {
         seedSequenceNumber();
         seedLoans();
         seedPermission();
+        seedRoles();
 //        seedIncomeExpense();
 
     }
+
+    private void seedRoles(){
+        List<String> roles=List.of("USER","ADMIN","SUPER_ADMIN");
+        List<Role> roleList=new ArrayList<>();
+        for (String role:roles){
+            Role r=new Role(role,role,null);
+            roleList.add(r);
+        }
+        roleRepository.saveAll(roleList);
+    }
+
     private void seedPermission(){
         List<String> crudData=List.of("VIEW","CREATE","UPDATE","DELETE");
         List<String> entities=List.of("PRODUCT","CATEGORY","REPORT","FILE","ROLE");
