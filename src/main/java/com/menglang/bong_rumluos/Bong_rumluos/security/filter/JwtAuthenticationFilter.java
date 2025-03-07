@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             objectMapperConverter.sendErrorResponse(response, "Token was expired.");
         } catch (Exception ex) {
             log.info("error is user {}", ex.getMessage());
-            objectMapperConverter.sendErrorResponse(response, "Unauthorized");
+            objectMapperConverter.sendErrorResponse(response, ex.getMessage());
         }
     }
 

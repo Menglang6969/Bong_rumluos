@@ -3,6 +3,7 @@ package com.menglang.bong_rumluos.Bong_rumluos.configs;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AppConfig {
 
     @Bean
-    public AuditorAware<String> auditorProvider(){
+    public AuditorAware<String> auditorProvider() {
         return new AuditorAwareImpl();
     }
 
@@ -34,6 +35,7 @@ public class AppConfig {
         scheduler.setThreadNamePrefix("IsolatedScheduler-");
         return scheduler;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,15 +46,16 @@ public class AppConfig {
         return configuration.getAuthenticationManager();
     }
 
-    //register Object mapper prevent it unknown some Java library like time
+    //    register Object mapper prevent it unknown some Java library like time
     @Bean
     public ObjectMapper objectMapper(){
-        ObjectMapper obj=new ObjectMapper();
+        ObjectMapper obj=new JsonMapper();
         obj.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         obj.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         obj.registerModule(new JavaTimeModule());
         obj.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return obj;
     }
+
 
 }

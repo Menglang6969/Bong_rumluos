@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     private static final Logger log = LoggerFactory.getLogger(CategoryController.class);

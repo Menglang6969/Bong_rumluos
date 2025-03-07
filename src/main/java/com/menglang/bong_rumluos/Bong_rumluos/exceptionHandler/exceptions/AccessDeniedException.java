@@ -17,9 +17,9 @@ public class AccessDeniedException implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, org.springframework.security.access.AccessDeniedException accessDeniedException) throws IOException, ServletException {
         var responseStatus = ResponseTemplate.builder()
-                .code(HttpStatus.FORBIDDEN)
+                .code((short) 401)
                 .message("Unauthorized Request")
-                .dateTime(LocalDateTime.now())
+//                .dateTime(LocalDateTime.now())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();

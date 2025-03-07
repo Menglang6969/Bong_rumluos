@@ -44,7 +44,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             User savedUser = userRepository.save(user);
             AuthenticationRes authenticationRes = extractAuthenticationResponse(savedUser);
             return ResponseTemplate.builder()
-                    .dateTime(LocalDateTime.now())
+//                    .dateTime(LocalDateTime.now())
                     .code((short) 201)
                     .message("user created successful")
                     .data(authenticationRes)
@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (authentication.isAuthenticated()) {
             AuthenticationRes authenticationRes = extractAuthenticationResponse(user);
             return ResponseTemplate.builder()
-                    .dateTime(LocalDateTime.now())
+//                    .dateTime(LocalDateTime.now())
                     .code((short) 200)
                     .message("successful")
                     .data(authenticationRes)

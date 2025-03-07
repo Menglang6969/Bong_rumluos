@@ -20,6 +20,9 @@ public class JwtProperties {
     @Value("${jwt.expire}")
     private String expire;
 
+    @Value("${jwt.refresh_expire}")
+    private String refresh_token_expire;
+
     @Value("${jwt.secrete}")
     private String secrete;
 }

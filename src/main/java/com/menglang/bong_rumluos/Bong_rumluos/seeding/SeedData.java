@@ -16,6 +16,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.product.ProductRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.role.RoleMapper;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.role.RoleRequest;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.*;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.IncomeExpenseType;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.enums.LoanStatus;
@@ -78,71 +79,73 @@ public class SeedData {
 
     }
 
-    private void seedRoles(){
-        List<String> roles=List.of("USER","ADMIN","SUPER_ADMIN");
-        List<Role> roleList=new ArrayList<>();
-        for (String role:roles){
-            Role r=new Role(role,role,null);
-            roleList.add(r);
+    private void seedRoles() {
+        log.info(" seeding role......................");
+        List<String> roles = List.of("USER", "ADMIN", "SUPER_ADMIN");
+        List<Role> roleList = new ArrayList<>();
+        for (String role : roles) {
+            RoleRequest r = new RoleRequest(role, role, List.of());
+            Role reqRole = roleMapper.toRole(r, permissionRepository);
+            roleList.add(reqRole);
         }
         roleRepository.saveAll(roleList);
     }
 
-    private void seedPermission(){
-        List<String> crudData=List.of("VIEW","CREATE","UPDATE","DELETE");
-        List<String> entities=List.of("PRODUCT","CATEGORY","REPORT","FILE","ROLE");
-        List<Permission> permissionRequestsList=new ArrayList<>();
+    private void seedPermission() {
+        List<String> crudData = List.of("VIEW", "CREATE", "UPDATE", "DELETE");
+        List<String> entities = List.of("PRODUCT", "CATEGORY", "REPORT", "FILE", "ROLE");
+        List<Permission> permissionRequestsList = new ArrayList<>();
 
 
-        for (String crud:crudData){
-            for (String entity:entities){
-                String permission=crud+"_"+entity;
-                String description=crud+" "+entity;
+        for (String crud : crudData) {
+            for (String entity : entities) {
+                String permission = crud + "_" + entity;
+                String description = crud + " " + entity;
 
-                PermissionRequest permissionRequest=PermissionRequest.builder()
+                PermissionRequest permissionRequest = PermissionRequest.builder()
                         .name(permission)
                         .description(description)
                         .build();
-                Permission permissionData=permissionMapper.toPermission(permissionRequest);
+                Permission permissionData = permissionMapper.toPermission(permissionRequest);
                 permissionRequestsList.add(permissionData);
             }
         }
 
-        try{
+        try {
             permissionRepository.saveAll(permissionRequestsList);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
 
     }
 
 
-    private void seedIncomeExpense(){
+    private void seedIncomeExpense() {
         log.info("invoke seeding income expense.....");
-        IncomeExpenseCategoryReqDto reqDto1=new IncomeExpenseCategoryReqDto("Electricity","Pay for EDC");
-        IncomeExpenseCategoryReqDto reqDto2=new IncomeExpenseCategoryReqDto("NSSF","Pay for NSSF");
-        IncomeExpenseCategoryReqDto reqDto3=new IncomeExpenseCategoryReqDto("Salary","Pay for Employee Salary");
+        IncomeExpenseCategoryReqDto reqDto1 = new IncomeExpenseCategoryReqDto("Electricity", "Pay for EDC");
+        IncomeExpenseCategoryReqDto reqDto2 = new IncomeExpenseCategoryReqDto("NSSF", "Pay for NSSF");
+        IncomeExpenseCategoryReqDto reqDto3 = new IncomeExpenseCategoryReqDto("Salary", "Pay for Employee Salary");
 
-        IncomeExpenseReqDto d1=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,1L,new BigDecimal(100),"Pay for 1/12/2024");
-        IncomeExpenseReqDto d2=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,2L,new BigDecimal(150),"Pay for 1/12/2024");
-        IncomeExpenseReqDto d3=new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE,3L,new BigDecimal(250),"Pay for 1/12/2024");
+        IncomeExpenseReqDto d1 = new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE, 1L, new BigDecimal(100), "Pay for 1/12/2024");
+        IncomeExpenseReqDto d2 = new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE, 2L, new BigDecimal(150), "Pay for 1/12/2024");
+        IncomeExpenseReqDto d3 = new IncomeExpenseReqDto(IncomeExpenseType.EXPENSE, 3L, new BigDecimal(250), "Pay for 1/12/2024");
 
-        List<IncomeExpenseCategory> allDto= Stream.of(reqDto1,reqDto2,reqDto3).map(incomeExpenseCategoryMapper::toRequest).toList();
-        List<IncomeExpense> ds= Stream.of(d1,d2,d3).map(p->incomeExpenseMapper.toRequest(p,incomeExpenseCategoryRepository)).toList();
+        List<IncomeExpenseCategory> allDto = Stream.of(reqDto1, reqDto2, reqDto3).map(incomeExpenseCategoryMapper::toRequest).toList();
+        List<IncomeExpense> ds = Stream.of(d1, d2, d3).map(p -> incomeExpenseMapper.toRequest(p, incomeExpenseCategoryRepository)).toList();
 
 
     }
 
     private void seedLoans() {
         log.info("invoke seeding loans....");
-        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2024, 12, 25), LocalDate.of(2025, 6, 25), (short) 3, 1L,List.of(1L), LoanType.EMILoan,  BigDecimal.ZERO,"");
-        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2024, 11, 25), LocalDate.of(2025, 12, 25), (short) 3, 1L,List.of(1L),  LoanType.EMILoan,  BigDecimal.ZERO,"");
+        LoanDto loanDto1 = new LoanDto(new BigDecimal(10000), 10.0, Terms.SHORT, LocalDate.of(2024, 12, 25), LocalDate.of(2025, 6, 25), (short) 3, 1L, List.of(1L), LoanType.EMILoan, BigDecimal.ZERO, "");
+        LoanDto loanDto2 = new LoanDto(new BigDecimal(12000), 5.0, Terms.SHORT, LocalDate.of(2024, 11, 25), LocalDate.of(2025, 12, 25), (short) 3, 1L, List.of(1L), LoanType.EMILoan, BigDecimal.ZERO, "");
 
         List<LoanDto> loanDtoList = List.of(loanDto1, loanDto2);
         try {
             LoanCalculateService loanProcess = loanFactory.getPaymentService(LoanType.EMILoan);
 
-            List<Loan> loans = loanDtoList.stream().map(l -> loanMapper.toLoan(l, customerRepository,productRepository)).toList();
+            List<Loan> loans = loanDtoList.stream().map(l -> loanMapper.toLoan(l, customerRepository, productRepository)).toList();
             for (Loan loan : loans) {
                 List<LoanSchedulerResponse> loanSchedulerResponse = loanProcess.loanCalculator(loan.getPrincipal(), loan.getRate(), loan.getStartDate(), loan.getEndDate());
 
@@ -217,12 +220,12 @@ public class SeedData {
 
     private void seedProduct() {
         log.info("seeding products . . . . . . . . . .");
-        ProductRequest p1 = new ProductRequest("I-Phone 10 Pro Max", "color Gold",new BigDecimal(1200),new BigDecimal(1400) ,1L, "#fafaee", "", "IMEI0000001", "IMEI0000002", null, null);
-        ProductRequest p2 = new ProductRequest("I-Phone 11 Pro Max", "color Gold",new BigDecimal(1200),new BigDecimal(1400), 1L, "#fafaee", "", "IMEI0000003", "IMEI0000004", null, null);
-        ProductRequest p3 = new ProductRequest("Honda Dream 2025", "Black",new BigDecimal(2200),new BigDecimal(2600), 2L, "#fafaee", "", "1BL-5522", "02400012555", null, null);
-        ProductRequest p4 = new ProductRequest("SCOOPY 2025", "White",new BigDecimal(2400),new BigDecimal(2900), 2L, "#fafaee", "", "1FL-2255", "012554455", null, null);
-        ProductRequest p5 = new ProductRequest("Cyber Truck 2024", "Black",new BigDecimal(70000),new BigDecimal(100000), 3L, "#fafaee", "", "1FF-MENGLANG", "012225544", null, null);
-        ProductRequest p6 = new ProductRequest("Samsung TV", "Online TV",new BigDecimal(200),new BigDecimal(300), 4L, "#fafaee", "", "TV-MENGLANG", "000011112", null, null);
+        ProductRequest p1 = new ProductRequest("I-Phone 10 Pro Max", "color Gold", new BigDecimal(1200), new BigDecimal(1400), 1L, "#fafaee", "", "IMEI0000001", "IMEI0000002", null, null);
+        ProductRequest p2 = new ProductRequest("I-Phone 11 Pro Max", "color Gold", new BigDecimal(1200), new BigDecimal(1400), 1L, "#fafaee", "", "IMEI0000003", "IMEI0000004", null, null);
+        ProductRequest p3 = new ProductRequest("Honda Dream 2025", "Black", new BigDecimal(2200), new BigDecimal(2600), 2L, "#fafaee", "", "1BL-5522", "02400012555", null, null);
+        ProductRequest p4 = new ProductRequest("SCOOPY 2025", "White", new BigDecimal(2400), new BigDecimal(2900), 2L, "#fafaee", "", "1FL-2255", "012554455", null, null);
+        ProductRequest p5 = new ProductRequest("Cyber Truck 2024", "Black", new BigDecimal(70000), new BigDecimal(100000), 3L, "#fafaee", "", "1FF-MENGLANG", "012225544", null, null);
+        ProductRequest p6 = new ProductRequest("Samsung TV", "Online TV", new BigDecimal(200), new BigDecimal(300), 4L, "#fafaee", "", "TV-MENGLANG", "000011112", null, null);
         List<Product> products = Stream.of(p1, p2, p3, p4, p5, p6).map(this.productMapper::toEntity).toList();
         try {
             productRepository.saveAll(products);

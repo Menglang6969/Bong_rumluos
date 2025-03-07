@@ -8,6 +8,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,8 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
-public class JwtTokenServiceImpl implements JwtTokenService{
+public class JwtTokenServiceImpl implements JwtTokenService {
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenServiceImpl.class);
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtProperties jwtProperties;
 
@@ -45,18 +48,26 @@ public class JwtTokenServiceImpl implements JwtTokenService{
 
     @Override
     public String generateToken(UserPrincipal userPrincipal) {
+        Instant currentTime = Instant.now();
+        log.info("jwt expire: {}", jwtProperties.getRefresh_token_expire());
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())
                 .claim("authorities", userPrincipal.getAuthorities().stream().map(Object::toString).toList())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusSeconds(Long.parseLong(String.valueOf(this.jwtProperties.getExpire())))))
+                .expiration(Date.from(currentTime.plusSeconds(Long.parseLong(this.jwtProperties.getExpire()))))
                 .signWith(getSignInKey())
                 .compact();
     }
 
     @Override
     public String refreshToken(UserPrincipal userPrincipal) {
-        return "";
+        Instant currentTime = Instant.now();
+        return Jwts.builder()
+                .subject(userPrincipal.getUsername())
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(currentTime.plusSeconds(Long.parseLong(this.jwtProperties.getRefresh_token_expire()))))
+                .signWith(getSignInKey())
+                .compact();
     }
 
     @Override
