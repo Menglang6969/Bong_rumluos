@@ -5,6 +5,7 @@ import com.menglang.bong_rumluos.Bong_rumluos.dto.authentication.*;
 import com.menglang.bong_rumluos.Bong_rumluos.security.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,8 +24,4 @@ public class AuthController {
         return ResponseEntity.ok(authenticationService.authenticate(req));
     }
 
-    @PutMapping("/reset-password")
-    public ResponseEntity<ResponseTemplate> changePassword(@RequestBody ResetPasswordDTO dto){
-        return ResponseEntity.ok(authenticationService.resetPassword(dto));
-    }
 }

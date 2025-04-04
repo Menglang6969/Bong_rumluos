@@ -1,6 +1,6 @@
 package com.menglang.bong_rumluos.Bong_rumluos.dto.role;
-
 import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.permission.PermissionShortResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Permission;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Role;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
@@ -24,7 +24,7 @@ public interface RoleMapper {
     @Mapping(target = "permissions",source = "permissions",qualifiedByName = "mapToPermissionRes")
     RoleResponse toResponse(Role role);
 
-    PermissionResponse toPermissionRes(Permission permission);
+    PermissionShortResponse toPermissionRes(Permission permission);
 
     @Named("mapToPermission")
     default Permission mapToPermission(Long id,@Context PermissionRepository repository){
@@ -32,7 +32,7 @@ public interface RoleMapper {
     }
 
     @Named("mapToPermissionRes")
-    default PermissionResponse mapToPermissionRes(Permission permission){
+    default PermissionShortResponse mapToPermissionRes(Permission permission){
         return this.toPermissionRes(permission);
     }
 }

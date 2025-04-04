@@ -2,6 +2,8 @@ package com.menglang.bong_rumluos.Bong_rumluos.security.service;
 
 import com.menglang.bong_rumluos.Bong_rumluos.dto.ResponseTemplate;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.authentication.*;
+import com.menglang.bong_rumluos.Bong_rumluos.dto.me.MeResponse;
+import com.menglang.bong_rumluos.Bong_rumluos.entities.Permission;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Role;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.User;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
@@ -13,6 +15,8 @@ import com.menglang.bong_rumluos.Bong_rumluos.security.jwt.JwtTokenService;
 import com.menglang.bong_rumluos.Bong_rumluos.security.userPrincipal.AuthoritiesExtraction;
 import com.menglang.bong_rumluos.Bong_rumluos.security.userPrincipal.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,11 +24,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationMapper authenticationMapper;
     private final RoleRepository roleRepository;
@@ -57,13 +63,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ResponseTemplate authenticate(AuthenticationReq loginDto) {
+
         User user = userRepository.findByUsername(loginDto.username()).orElseThrow(() -> new NotFoundException("User Not Found"));
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
-                        user.getPassword()
+                        loginDto.username(),
+                        loginDto.password()
                 )
         );
+
         if (authentication.isAuthenticated()) {
             AuthenticationRes authenticationRes = extractAuthenticationResponse(user);
             return ResponseTemplate.builder()
@@ -96,6 +104,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadRequestException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public ResponseTemplate getMe(Authentication authentication) {
+        String username=authentication.getName();
+        User user= userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User Not Found"));
+
+        List<String > roles=user.getRoles().stream().map(Role::getName).toList();
+        List<String> permissions=user.getRoles().stream().flatMap(r->r.getPermissions().stream()).map(Permission::getName).toList();
+        MeResponse me=MeResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(username)
+                .firstname(user.getFirstName())
+                .lastname(user.getLastName())
+                .roles(roles)
+                .permissions(permissions)
+                .build();
+      return ResponseTemplate.builder()
+              .message("success")
+              .data(me)
+              .code((short) 200)
+              .dateTime(LocalDateTime.now())
+              .build();
     }
 
     private AuthenticationRes extractAuthenticationResponse(User user) {

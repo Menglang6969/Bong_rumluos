@@ -39,14 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.info("trigger doFilter...........");
         try {
-
             String accessToken = request.getHeader(jwtProperties.getHeader());
             if (accessToken == null || !accessToken.startsWith(jwtProperties.getPrefix())) {
                 filterChain.doFilter(request, response);
                 return;
             }
             log.info("doFilter...........");
-            if (accessToken.isBlank() || accessToken.isEmpty()) {
+            if (!accessToken.isBlank() || !accessToken.isEmpty()) {
                 accessToken = accessToken.substring(7);
                 if (jwtTokenService.isValidToken(accessToken)) {
                     Claims claims = jwtTokenService.extractClaims(accessToken);
@@ -61,18 +60,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         //setContext to Spring Security
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         filterChain.doFilter(request, response);
-                    } else log.warn("invalid user");
+                    } else {
+                        log.warn("Invalid User");
+                        sendError(response, "Invalid User");
+                        return;
+                    };
 
-                } else log.warn("invalid token");
+                } else{
+                    log.warn("invalid token");
+                    sendError(response, "Invalid token");
+                    return;
+                };
 
             } else log.warn("Access token ");
         } catch (ExpiredJwtException ex) {
             log.info("Token expire.");
-            objectMapperConverter.sendErrorResponse(response, "Token was expired.");
+            sendError(response, "Token expired");
         } catch (Exception ex) {
             log.info("error is user {}", ex.getMessage());
             objectMapperConverter.sendErrorResponse(response, ex.getMessage());
         }
+    }
+
+    private void sendError(HttpServletResponse response, String message) throws IOException {
+        log.warn("JWT Filter Error Response: {}", message);
+        objectMapperConverter.sendErrorResponse(response, message);
+
     }
 
 

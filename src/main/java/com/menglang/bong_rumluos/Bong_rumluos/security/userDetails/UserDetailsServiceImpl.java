@@ -24,7 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-
     private UserPrincipal customUserDetail(String username){
         User user=userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not Found"));
         return  new UserPrincipal(user.getUsername(),user.getPassword(),authoritiesExtraction.extractRoleGrantAuthorities(user.getRoles()));
