@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customer")
+@RequestMapping("/api/v1/customer")
 @RequiredArgsConstructor
 public class LoanController {
     private static final Logger log = LoggerFactory.getLogger(LoanController.class);

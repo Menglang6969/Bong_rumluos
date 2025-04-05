@@ -1,9 +1,6 @@
 package com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.BaseResponse;
-import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
-import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.ConflictException;
-import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.InternalServerException;
-import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.NotFoundException;
+import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,6 +17,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<BaseResponse> handleBadRequestException(BadRequestException e) {
         return BaseResponse.failed(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<BaseResponse> handleForBiddenException(ForbiddenException e) {
+        return BaseResponse.failed(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -44,6 +45,11 @@ public class GlobalExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<BaseResponse> handleUnauthorizedException(UnauthorizedException ex){
+        return BaseResponse.failed(ex.getMessage(),HttpStatus.UNAUTHORIZED);
     }
 
 

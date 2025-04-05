@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/income_expense_category")
+@RequestMapping("/api/v1/income_expense_category")
 @RequiredArgsConstructor
 public class IncomeExpenseCategoryController {
     private static final Logger log = LoggerFactory.getLogger(IncomeExpenseCategoryController.class);
