@@ -1,6 +1,6 @@
 package com.menglang.bong_rumluos.Bong_rumluos.annotations;
 
-
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.lang.annotation.ElementType;
@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
-public @interface IsSuperAdmin {
+@Secured({"ROLE_ADMIN","ROLE_SUPER_ADMIN","CREATE_CATEGORY"})
+public @interface IsCreate {
 }

@@ -1,11 +1,14 @@
 package com.menglang.bong_rumluos.Bong_rumluos.services.category;
 
+import com.menglang.bong_rumluos.Bong_rumluos.annotations.CanView;
+import com.menglang.bong_rumluos.Bong_rumluos.annotations.IsCreate;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryDTO;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryMapper;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.category.CategoryResponse;
 import com.menglang.bong_rumluos.Bong_rumluos.entities.Category;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.BadRequestException;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.ConflictException;
+import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.ForbiddenException;
 import com.menglang.bong_rumluos.Bong_rumluos.repositories.CategoryRepository;
 import com.menglang.bong_rumluos.Bong_rumluos.utils.PageableResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +31,17 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
+    @IsCreate
     @Override
     public Category create(CategoryDTO data) throws Exception {
+        log.info("category name :{}",data.getName());
        Category category= categoryMapper.toEntity(data,categoryRepository);
         log.info("category :{}",category.getName());
       try {
           return categoryRepository.save(category);
-      }catch (Exception e){
+      }catch (HttpClientErrorException.Forbidden e){
+          throw new ForbiddenException(e.getMessage());
+      }catch (RuntimeException e){
           throw new BadRequestException(e.getMessage());
       }
     }
@@ -72,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
+    @CanView
     @Override
     public Page<Category> getAll(
             int page,int size,String orderBy,String sortBy,String query

@@ -18,6 +18,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse> handleBadRequestException(BadRequestException e) {
         return BaseResponse.failed(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<BaseResponse> handleForBiddenException(ForbiddenException e) {
+        return BaseResponse.failed(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<BaseResponse> handleNotFoundException(NotFoundException e) {

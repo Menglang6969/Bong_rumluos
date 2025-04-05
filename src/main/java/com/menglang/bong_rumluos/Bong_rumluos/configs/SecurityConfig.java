@@ -1,5 +1,6 @@
 package com.menglang.bong_rumluos.Bong_rumluos.configs;
 
+import com.menglang.bong_rumluos.Bong_rumluos.customerComponents.CustomSecurityEvaluator;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.AccessDeniedException;
 import com.menglang.bong_rumluos.Bong_rumluos.security.entryPoint.JwtAuthenticationEntrypoint;
 import com.menglang.bong_rumluos.Bong_rumluos.security.filter.JwtAuthenticationFilter;
@@ -18,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 

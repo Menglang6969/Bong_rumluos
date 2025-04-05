@@ -10,12 +10,15 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -78,13 +81,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             sendError(response, "Token expired");
         } catch (Exception ex) {
             log.info("error is user {}", ex.getMessage());
-            objectMapperConverter.sendErrorResponse(response, ex.getMessage());
+            objectMapperConverter.sendErrorResponse(response, ex.getMessage(), (short) 401);
         }
     }
 
     private void sendError(HttpServletResponse response, String message) throws IOException {
         log.warn("JWT Filter Error Response: {}", message);
-        objectMapperConverter.sendErrorResponse(response, message);
+        objectMapperConverter.sendErrorResponse(response, message,(short) 401);
 
     }
 

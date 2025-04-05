@@ -25,20 +25,19 @@ public class ObjectMapperConvertor {
     private static final Logger log = LoggerFactory.getLogger(ObjectMapperConvertor.class);
 
     @Bean
-    public void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
-
+    public void sendErrorResponse(HttpServletResponse response, String errorMessage,Short code) throws IOException {
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("timestamp", LocalDateTime.now().toString());
         responseBody.put("message", errorMessage);
-        responseBody.put("code", 401);
+        responseBody.put("code", code);
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
         var msgJson = mapper.writeValueAsString(responseBody);
-        log.info("Msg Json: {}", msgJson);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(code);
+//        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(msgJson);
         response.getWriter().flush();
     }
