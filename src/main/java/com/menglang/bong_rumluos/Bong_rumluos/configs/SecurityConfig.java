@@ -1,6 +1,5 @@
 package com.menglang.bong_rumluos.Bong_rumluos.configs;
 
-import com.menglang.bong_rumluos.Bong_rumluos.customerComponents.CustomSecurityEvaluator;
 import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.exceptions.AccessDeniedException;
 import com.menglang.bong_rumluos.Bong_rumluos.security.entryPoint.JwtAuthenticationEntrypoint;
 import com.menglang.bong_rumluos.Bong_rumluos.security.filter.JwtAuthenticationFilter;
@@ -28,7 +27,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntrypoint jwtAuthenticationEntrypoint;
     private final AccessDeniedException accessDeniedException;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -55,5 +53,6 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
 
 }

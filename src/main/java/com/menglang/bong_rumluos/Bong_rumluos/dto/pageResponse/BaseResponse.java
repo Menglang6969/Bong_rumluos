@@ -3,8 +3,6 @@ package com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.page.PageBody;
 import com.menglang.bong_rumluos.Bong_rumluos.dto.pageResponse.page.PageMetadata;
-import com.menglang.bong_rumluos.Bong_rumluos.entities.base.BaseEntity;
-import com.menglang.bong_rumluos.Bong_rumluos.exceptionHandler.BaseException;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.domain.Page;

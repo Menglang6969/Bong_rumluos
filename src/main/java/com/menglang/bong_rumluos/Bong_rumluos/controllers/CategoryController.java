@@ -34,9 +34,10 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> create(@Valid @RequestBody CategoryDTO dto) throws Exception {
+    public ResponseEntity<BaseResponse> create(@Valid @RequestBody CategoryDTO dto) throws Exception {
         log.info("invoke category .........");
-        return ResponseEntity.ok(categoryMapper.toResponse(categoryService.create(dto)));
+        return BaseResponse.success(categoryMapper.toResponse(categoryService.create(dto)),null,"Create Successful");
+//        return ResponseEntity.ok(categoryMapper.toResponse(categoryService.create(dto)));
     }
 
     @PutMapping("/{id}")

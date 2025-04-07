@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Secured({"ROLE_ADMIN","ROLE_SUPER_ADMIN","CREATE_CATEGORY"})
-public @interface IsCreate {
+@PreAuthorize("@auth.isAdminOrSuperAdmin(authentication)")
+public @interface IsSuperAdminOrAdmin {
+
 }
